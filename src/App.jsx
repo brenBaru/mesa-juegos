@@ -1,22 +1,60 @@
-import React, { useState, useMemo } from "react";
-import { Users, Clock, Star, StarOff, Plus, Minus } from "lucide-react";
+import React, { useState } from "react";
+import { Star, StarOff } from "lucide-react";
 
-// Reemplazos simples de componentes UI
+// UI básicos
 const Card = ({ children, className }) => <div className={className}>{children}</div>;
-const CardContent = ({ children, className }) => <div className={className}>{children}</div>;
-const Button = ({ children, className = "", ...props }) => (
-  <button {...props} className={className}>
-    {children}
-  </button>
-);
+const Button = ({ children, ...props }) => <button {...props}>{children}</button>;
 
-// Datos de juegos (simplificado para evitar errores)
 const games = [
-  { id:"secret", name:"Secret Hitler", min:5, max:10, time:"45-60 min" },
-  { id:"polilla", name:"Polilla Tramposa", min:3, max:5, time:"15-25 min" },
-  { id:"musa", name:"Musa", min:2, max:12, time:"30 min" },
-  { id:"dungeon", name:"Dungeon Fighter", min:1, max:6, time:"45-60 min" },
-  { id:"deception", name:"Deception HK", min:4, max:12, time:"20 min" }
+  {
+    id: "secret",
+    name: "Secret Hitler",
+    min: 5,
+    max: 10,
+    time: "45–60 min",
+    setup: [
+      "Separar roles y cartas",
+      "Elegir presidente inicial",
+      "Preparar mazos de políticas"
+    ],
+    steps: [
+      "El presidente elige canciller",
+      "Se vota el gobierno",
+      "Se juega una política",
+      "Se repite hasta victoria"
+    ]
+  },
+  {
+    id: "polilla",
+    name: "Polilla Tramposa",
+    min: 3,
+    max: 5,
+    time: "15–25 min",
+    setup: [
+      "Repartir cartas",
+      "Asignar al guardián"
+    ],
+    steps: [
+      "Jugar cartas en orden",
+      "Hacer trampa sin ser visto",
+      "El guardián controla"
+    ]
+  },
+  {
+    id: "musa",
+    name: "Musa",
+    min: 2,
+    max: 12,
+    time: "30 min",
+    setup: [
+      "Dividir equipos",
+      "Preparar cartas"
+    ],
+    steps: [
+      "Dar pista según restricción",
+      "Equipo adivina imagen"
+    ]
+  }
 ];
 
 export default function App() {
@@ -25,75 +63,70 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [favs, setFavs] = useState([]);
 
-  const playable = useMemo(() => {
-    return games.filter(g => players >= g.min && players <= g.max);
-  }, [players]);
-
   const toggleFav = (id) => {
     setFavs(prev =>
-      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
 
   return (
     <div className="min-h-screen bg-[#031313] text-white p-4">
-      
-      <h1 className="text-3xl font-bold mb-4 text-emerald-400">
+
+      <h1 className="text-3xl font-bold text-emerald-400 mb-4">
         🎲 Mesa lista
       </h1>
 
-      {/* Selector de jugadores */}
-      <div className="flex items-center gap-3 mb-6">
-        <Button className="bg-slate-800 p-2 rounded" onClick={() => setPlayers(p => Math.max(1, p - 1))}>
-          <Minus />
-        </Button>
-
-        <span className="text-2xl font-bold">{players}</span>
-
-        <Button className="bg-emerald-400 text-black p-2 rounded" onClick={() => setPlayers(p => p + 1)}>
-          <Plus />
-        </Button>
+      <div className="flex gap-2 mb-4">
+        <button onClick={() => setPlayers(p => p - 1)}>-</button>
+        <span>{players}</span>
+        <button onClick={() => setPlayers(p => p + 1)}>+</button>
       </div>
 
-      {/* Lista */}
+      {/* LISTA */}
       <div className="space-y-3">
         {games.map(g => {
-
           const canPlay = players >= g.min && players <= g.max;
 
           return (
-            <Card key={g.id} className="bg-slate-900 p-4 rounded-xl border border-slate-700">
-              
+            <Card key={g.id} className="bg-slate-900 p-4 rounded-lg">
+
               <div className="flex justify-between">
-                <div>
+                <div onClick={() => setSelected(g)} className="cursor-pointer">
                   <h2 className="font-bold">{g.name}</h2>
-                  <p className="text-sm text-slate-400">{g.time}</p>
+                  <p className="text-sm">{g.time}</p>
                 </div>
 
                 <button onClick={() => toggleFav(g.id)}>
                   {favs.includes(g.id)
                     ? <Star className="text-emerald-400" />
-                    : <StarOff className="text-slate-500" />}
+                    : <StarOff />}
                 </button>
               </div>
 
-              <div className="mt-2 text-sm flex gap-2">
-                <span>{g.min}-{g.max} jugadores</span>
-                <span className={canPlay ? "text-emerald-400" : "text-red-400"}>
-                  {canPlay ? "Se puede jugar" : "No entra"}
-                </span>
-              </div>
+              <p className={canPlay ? "text-green-400" : "text-red-400"}>
+                {g.min}-{g.max} jugadores {canPlay ? "- se puede jugar" : "- no entra"}
+              </p>
 
             </Card>
           );
         })}
       </div>
 
-      {/* Selección */}
-      {playable.length === 0 && (
-        <p className="mt-4 text-red-400">
-          No hay juegos con esa cantidad de jugadores
-        </p>
+      {/* DETALLE */}
+      {selected && (
+        <div className="mt-6 p-4 bg-slate-800 rounded-lg">
+          <h2 className="text-xl font-bold">{selected.name}</h2>
+
+          <h3 className="mt-2 font-semibold">Preparación:</h3>
+          <ul>
+            {selected.setup.map((s, i) => <li key={i}>• {s}</li>)}
+          </ul>
+
+          <h3 className="mt-2 font-semibold">Cómo se juega:</h3>
+          <ul>
+            {selected.steps.map((s, i) => <li key={i}>• {s}</li>)}
+          </ul>
+        </div>
       )}
 
     </div>
