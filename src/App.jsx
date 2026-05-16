@@ -3,16 +3,6 @@ import {
   Search,
   Users,
   Clock,
-  Star,
-  StarOff,
-  Plus,
-  Minus,
-  ArrowLeft,
-  Trophy,
-  BookOpen,
-  PlayCircle,
-  Home,
-  Heart,
   Filter,
   ExternalLink,
   Save,
@@ -579,70 +569,107 @@ const emptyForm = {
 function D12Logo({ compact = false }) {
   return (
     <div
-      className={`relative flex items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg transition-all ${
+      className={`flex items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg transition-all ${
         compact ? "h-10 w-10" : "h-12 w-12"
       }`}
     >
       <svg
-        viewBox="0 0 120 100"
-        className={compact ? "h-8 w-9" : "h-10 w-11"}
+        viewBox="0 0 100 100"
+        className={compact ? "h-7 w-7" : "h-9 w-9"}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M38 48 C24 33 13 32 7 42 C15 42 19 47 22 52 C14 52 9 56 7 64 C18 62 27 59 38 52"
-          fill="rgba(103, 232, 249, 0.18)"
-          stroke="#67e8f9"
-          strokeWidth="4"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M82 48 C96 33 107 32 113 42 C105 42 101 47 98 52 C106 52 111 56 113 64 C102 62 93 59 82 52"
-          fill="rgba(103, 232, 249, 0.18)"
-          stroke="#67e8f9"
-          strokeWidth="4"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M60 12 L84 24 L92 50 L76 78 L60 88 L44 78 L28 50 L36 24 Z"
+          d="M50 6 L84 20 L96 52 L74 88 L50 96 L26 88 L4 52 L16 20 Z"
           stroke="#34d399"
-          strokeWidth="5"
+          strokeWidth="6"
           strokeLinejoin="round"
-          fill="rgba(52, 211, 153, 0.13)"
+          fill="rgba(52, 211, 153, 0.10)"
         />
-
         <path
-          d="M60 12 L60 31 M36 24 L49 42 M84 24 L71 42 M28 50 L47 55 M92 50 L73 55 M44 78 L53 63 M76 78 L67 63"
+          d="M50 6 L50 30 M16 20 L36 42 M84 20 L64 42 M4 52 L32 58 M96 52 L68 58 M26 88 L40 66 M74 88 L60 66"
           stroke="#67e8f9"
-          strokeWidth="3"
+          strokeWidth="4"
           strokeLinecap="round"
           opacity="0.75"
         />
-
         <circle
-          cx="60"
+          cx="50"
           cy="52"
-          r="19"
-          fill="rgba(15, 23, 42, 0.92)"
+          r="23"
+          fill="rgba(15, 23, 42, 0.9)"
           stroke="#34d399"
-          strokeWidth="3.5"
+          strokeWidth="4"
         />
-
         <text
-          x="60"
-          y="59"
+          x="50"
+          y="60"
           textAnchor="middle"
-          fontSize="21"
+          fontSize="25"
           fontWeight="900"
           fill="#a7f3d0"
           fontFamily="Arial, sans-serif"
         >
           12
         </text>
+      </svg>
+    </div>
+  );
+}
+
+function DragonCornerIcon({ compact = false }) {
+  return (
+    <div
+      className={`flex items-center justify-center rounded-2xl border border-cyan-400/25 bg-cyan-400/10 shadow-lg transition-all ${
+        compact ? "h-10 w-10" : "h-12 w-12"
+      }`}
+      aria-label="Icono decorativo de dragón"
+    >
+      <svg
+        viewBox="0 0 120 120"
+        className={compact ? "h-7 w-7" : "h-9 w-9"}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M64 42 C76 20 98 17 108 30 C95 31 88 39 84 49 C96 48 105 54 110 66 C92 64 78 58 66 48"
+          fill="rgba(103, 232, 249, 0.18)"
+          stroke="#67e8f9"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M30 80 C40 58 52 48 69 43 C61 54 63 66 76 76 C61 77 48 74 36 88"
+          fill="rgba(52, 211, 153, 0.16)"
+          stroke="#34d399"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M62 39 C66 27 78 22 90 27 C84 31 82 36 85 42 C75 39 69 40 62 47"
+          fill="rgba(52, 211, 153, 0.18)"
+          stroke="#34d399"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M83 27 L93 16 L90 31"
+          stroke="#a7f3d0"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M36 86 C25 96 17 92 13 84 C23 87 29 82 34 74"
+          stroke="#67e8f9"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="77" cy="34" r="2.7" fill="#a7f3d0" />
       </svg>
     </div>
   );
@@ -662,11 +689,9 @@ function timeLabel(game) {
 
 function getPlayerSpecificSetup(game, players) {
   if (!game.playerSetups) return [];
-
   const match = game.playerSetups.find(
     (rule) => players >= rule.min && players <= rule.max
   );
-
   return match ? match.steps : [];
 }
 
@@ -674,7 +699,6 @@ function Chip({ children, variant = "default" }) {
   const styles = {
     default: "bg-slate-800 text-slate-200 border border-slate-700",
     ok: "bg-emerald-400/15 text-emerald-200 border border-emerald-400/40",
-    blue: "bg-cyan-400/15 text-cyan-100 border border-cyan-400/40",
     purple: "bg-violet-400/15 text-violet-100 border border-violet-400/40",
     danger: "bg-red-400/15 text-red-200 border border-red-400/40"
   };
@@ -694,7 +718,6 @@ function LabeledSelect({ label, value, onChange, options }) {
       <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
         {label}
       </span>
-
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -714,7 +737,6 @@ function Field({ label, value, onChange, type = "text", placeholder = "" }) {
       <span className="mb-1 block text-xs font-bold text-slate-300">
         {label}
       </span>
-
       <input
         type={type}
         value={value}
@@ -732,7 +754,6 @@ function TextAreaField({ label, value, onChange, placeholder }) {
       <span className="mb-1 block text-xs font-bold text-slate-300">
         {label}
       </span>
-
       <textarea
         value={value}
         placeholder={placeholder}
@@ -775,13 +796,9 @@ export default function App() {
   const games = useMemo(() => [...initialGames, ...customGames], [customGames]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsCompactHeader(window.scrollY > 90);
-    };
-
+    const handleScroll = () => setIsCompactHeader(window.scrollY > 90);
     window.addEventListener("scroll", handleScroll);
     handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -1219,24 +1236,28 @@ export default function App() {
             isCompactHeader ? "pb-3 pt-3" : "pb-4 pt-4"
           }`}
         >
-          <div className="flex items-center gap-3">
-            <D12Logo compact={isCompactHeader} />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <D12Logo compact={isCompactHeader} />
 
-            <div>
-              <h1
-                className={`font-black text-white transition-all ${
-                  isCompactHeader ? "text-xl" : "text-2xl"
-                }`}
-              >
-                {APP_NAME}
-              </h1>
+              <div>
+                <h1
+                  className={`font-black text-white transition-all ${
+                    isCompactHeader ? "text-xl" : "text-2xl"
+                  }`}
+                >
+                  {APP_NAME}
+                </h1>
 
-              {!isCompactHeader && (
-                <p className="text-xs font-black uppercase tracking-wide text-emerald-300">
-                  {APP_SUBTITLE}
-                </p>
-              )}
+                {!isCompactHeader && (
+                  <p className="text-xs font-black uppercase tracking-wide text-emerald-300">
+                    {APP_SUBTITLE}
+                  </p>
+                )}
+              </div>
             </div>
+
+            <DragonCornerIcon compact={isCompactHeader} />
           </div>
 
           <div
@@ -1458,7 +1479,9 @@ export default function App() {
                     {timeText(game)}
                   </Chip>
 
-                  <Chip variant="purple">{timeLabel(game)}</Chip>
+                  <Chip variant="purple">
+                    {timeLabel(game)}
+                  </Chip>
                 </div>
               </button>
             );
@@ -1467,7 +1490,10 @@ export default function App() {
 
         <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-md -translate-x-1/2 grid-cols-3 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">
           <button
-            onClick={() => setScreen("home")}
+            onClick={() => {
+              setScreen("home");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
               screen === "home"
                 ? "bg-emerald-400 text-slate-950"
@@ -1479,7 +1505,10 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setScreen("favorites")}
+            onClick={() => {
+              setScreen("favorites");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
               screen === "favorites"
                 ? "bg-emerald-400 text-slate-950"
@@ -1491,7 +1520,10 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setScreen("add")}
+            onClick={() => {
+              setScreen("add");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
               screen === "add"
                 ? "bg-emerald-400 text-slate-950"
