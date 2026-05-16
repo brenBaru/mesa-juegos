@@ -41,6 +41,38 @@ const initialGames = [
     vibe: "Debate, engaño y votaciones tensas.",
     videoUrl: "https://www.youtube.com/results?search_query=Secret+Hitler+como+jugar",
     rulesUrl: "https://www.google.com/search?q=Secret+Hitler+reglas+español",
+    playerSetups: [
+      {
+        min: 5,
+        max: 6,
+        steps: [
+          "Usá el tablero correspondiente a 5–6 jugadores.",
+          "Prepará 3 liberales, 1 fascista y Hitler.",
+          "En la fase inicial, Hitler y el fascista se reconocen siguiendo el procedimiento del reglamento.",
+          "Con pocos jugadores hay menos margen de error, así que conviene explicar bien cómo funcionan las votaciones."
+        ]
+      },
+      {
+        min: 7,
+        max: 8,
+        steps: [
+          "Usá el tablero correspondiente a 7–8 jugadores.",
+          "Prepará 4–5 liberales según cantidad, 2 fascistas y Hitler.",
+          "Los fascistas se reconocen entre sí y reconocen a Hitler según el procedimiento inicial.",
+          "Hitler debe jugar con más cautela porque hay más jugadores y más debate social."
+        ]
+      },
+      {
+        min: 9,
+        max: 10,
+        steps: [
+          "Usá el tablero correspondiente a 9–10 jugadores.",
+          "Prepará el set completo de roles para grupo grande.",
+          "Habrá más fascistas y más ruido social, así que conviene explicar bien la fase de votación antes de empezar.",
+          "Asegurate de que todos entiendan las restricciones para elegir Presidente y Canciller."
+        ]
+      }
+    ],
     setup: [
       "Elegí el tablero fascista correspondiente a la cantidad de jugadores y colocá también el tablero liberal.",
       "Mezclá las cartas de políticas liberales y fascistas para formar el mazo de políticas.",
@@ -72,6 +104,26 @@ const initialGames = [
     vibe: "Caos, risas y trampas permitidas.",
     videoUrl: "https://www.youtube.com/results?search_query=Polilla+Tramposa+como+jugar",
     rulesUrl: "https://www.google.com/search?q=Polilla+Tramposa+reglas",
+    playerSetups: [
+      {
+        min: 3,
+        max: 3,
+        steps: [
+          "Con 3 jugadores, el Chinche Guardián tiene más control visual sobre la mesa.",
+          "Conviene sentarse con suficiente espacio entre jugadores para que las trampas sigan siendo posibles.",
+          "La partida suele ser más táctica porque hay menos distracciones."
+        ]
+      },
+      {
+        min: 4,
+        max: 5,
+        steps: [
+          "Con 4–5 jugadores, dejá más espacio alrededor de la mesa.",
+          "El Chinche Guardián debe poder mirar a todos, pero no puede revisar manos ni zonas ocultas permanentemente.",
+          "La partida suele ser más caótica y graciosa porque hay más oportunidades de distracción."
+        ]
+      }
+    ],
     setup: [
       "Separá la carta de Chinche Guardián y entregásela al jugador inicial.",
       "Mezclá el resto de las cartas.",
@@ -102,6 +154,26 @@ const initialGames = [
     vibe: "Paranoia, sospechas e infección.",
     videoUrl: "https://www.youtube.com/results?search_query=El+Huésped+juego+de+mesa+como+jugar",
     rulesUrl: "https://www.google.com/search?q=El+Huésped+juego+de+mesa+reglas",
+    playerSetups: [
+      {
+        min: 5,
+        max: 7,
+        steps: [
+          "Con grupos chicos, la información circula más rápido y cada voto pesa mucho.",
+          "Conviene explicar bien las condiciones de victoria antes de repartir roles.",
+          "Usá solo los roles o cartas recomendadas para partidas base si el grupo no conoce el juego."
+        ]
+      },
+      {
+        min: 8,
+        max: 12,
+        steps: [
+          "Con grupos grandes, prepará más espacio para debate y votaciones.",
+          "Asegurate de que todos entiendan cómo se resuelven eventos o fases nocturnas si tu edición las usa.",
+          "Conviene designar a una persona que recuerde el orden de resolución de fases."
+        ]
+      }
+    ],
     setup: [
       "Separá las cartas necesarias según la cantidad de jugadores.",
       "Repartí un rol secreto a cada jugador.",
@@ -132,6 +204,26 @@ const initialGames = [
     vibe: "Reflejos, velocidad y búsqueda de gemas.",
     videoUrl: "https://www.youtube.com/results?search_query=La+Morada+Maldita+como+jugar",
     rulesUrl: "https://www.google.com/search?q=La+Morada+Maldita+reglas",
+    playerSetups: [
+      {
+        min: 2,
+        max: 3,
+        steps: [
+          "Repartí 5 cartas de reto a cada jugador.",
+          "Dejá las gemas bien separadas para que se vean claramente.",
+          "La partida es más controlada, ideal para explicar reglas o jugar con personas nuevas."
+        ]
+      },
+      {
+        min: 4,
+        max: 6,
+        steps: [
+          "Repartí 4 cartas de reto a cada jugador.",
+          "Asegurate de que todos puedan alcanzar el centro de la mesa.",
+          "Conviene hacer una ronda de prueba rápida antes de empezar la partida real."
+        ]
+      }
+    ],
     setup: [
       "Colocá todas las gemas visibles en el centro de la mesa.",
       "Dejá la joya morada al alcance de todos.",
@@ -162,6 +254,26 @@ const initialGames = [
     vibe: "Escape contrarreloj de una casona con una amenaza cerca.",
     videoUrl: "https://www.youtube.com/results?search_query=Bajo+Amenaza+juego+de+mesa+como+jugar",
     rulesUrl: "https://www.google.com/search?q=Bajo+Amenaza+juego+de+mesa+reglas",
+    playerSetups: [
+      {
+        min: 3,
+        max: 4,
+        steps: [
+          "Con 3–4 jugadores, cada decisión individual pesa más.",
+          "Conviene hablar antes de cada turno para no desperdiciar recursos.",
+          "Si el grupo es nuevo, evitá variantes más difíciles en la primera partida."
+        ]
+      },
+      {
+        min: 5,
+        max: 6,
+        steps: [
+          "Con 5–6 jugadores, el grupo tiene más voces y puede tardar más en decidir.",
+          "Definan una forma rápida de resolver desacuerdos.",
+          "Conviene que una persona recuerde qué amenazas ya aparecieron."
+        ]
+      }
+    ],
     setup: [
       "Prepará el mazo inicial siguiendo el reglamento de tu edición.",
       "Separá cartas especiales como salida, llave, amenaza o asesino si corresponde.",
@@ -192,6 +304,26 @@ const initialGames = [
     vibe: "Acusaciones, equipos secretos y traiciones.",
     videoUrl: "https://www.youtube.com/results?search_query=Líderes+de+Euphoria+como+jugar",
     rulesUrl: "https://www.google.com/search?q=Líderes+de+Euphoria+reglas",
+    playerSetups: [
+      {
+        min: 4,
+        max: 5,
+        steps: [
+          "Quitá todas las cartas o componentes con números superiores a la cantidad de jugadores.",
+          "Con pocos jugadores, cada información revelada pesa mucho más.",
+          "Recordá que mentir es parte del juego y no debe considerarse trampa."
+        ]
+      },
+      {
+        min: 6,
+        max: 8,
+        steps: [
+          "Quitá reclutas y láseres que indiquen números mayores a la cantidad de jugadores.",
+          "Con más jugadores, revisá bien que todos tengan la cantidad correcta de reclutas y artefactos.",
+          "Antes de empezar, repasá cómo funcionan interrogatorios, disparos y condiciones de victoria."
+        ]
+      }
+    ],
     setup: [
       "Quitá reclutas y láseres con números mayores a la cantidad de jugadores.",
       "Separá los dos Líderes y mezclá los reclutas necesarios.",
@@ -222,6 +354,26 @@ const initialGames = [
     vibe: "Imágenes surrealistas e intuición con pistas limitadas.",
     videoUrl: "https://www.youtube.com/results?search_query=Musa+juego+de+mesa+como+jugar",
     rulesUrl: "https://www.google.com/search?q=Musa+juego+de+mesa+reglas",
+    playerSetups: [
+      {
+        min: 2,
+        max: 3,
+        steps: [
+          "Jugá en modo reducido o cooperativo si tu edición lo permite.",
+          "Si son 2 jugadores, alternen quién da pistas y quién adivina.",
+          "Definan una cantidad corta de puntos para que la partida no se alargue."
+        ]
+      },
+      {
+        min: 4,
+        max: 12,
+        steps: [
+          "Dividan el grupo en dos equipos lo más equilibrados posible.",
+          "Alternen quién será la Musa dentro de cada equipo.",
+          "Definan antes de empezar cuántas cartas necesita un equipo para ganar."
+        ]
+      }
+    ],
     setup: [
       "Dividan al grupo en dos equipos equilibrados.",
       "Mezclá las cartas de imagen u obra maestra.",
@@ -252,6 +404,26 @@ const initialGames = [
     vibe: "Alianzas, traición y consejos tribales.",
     videoUrl: "https://www.youtube.com/results?search_query=Survivor+The+Tribe+Has+Spoken+board+game+how+to+play",
     rulesUrl: "https://www.google.com/search?q=Survivor+The+Tribe+Has+Spoken+board+game+rules",
+    playerSetups: [
+      {
+        min: 3,
+        max: 4,
+        steps: [
+          "Con pocos jugadores, las alianzas son más frágiles y las votaciones tienen mayor impacto.",
+          "Prepará menos cartas de Consejo Tribal si el reglamento indica ajuste por cantidad de jugadores.",
+          "Conviene explicar desde el inicio cómo se define el ganador final."
+        ]
+      },
+      {
+        min: 5,
+        max: 6,
+        steps: [
+          "Con 5–6 jugadores, prepará la cantidad completa de personajes, votos y cartas de acción que indique tu edición.",
+          "Dejá claro cómo se resuelven empates en votaciones.",
+          "Recordá que las alianzas y traiciones son parte central del juego."
+        ]
+      }
+    ],
     setup: [
       "Cada jugador elige un color o personaje.",
       "Prepará las cartas de acción.",
@@ -282,6 +454,26 @@ const initialGames = [
     vibe: "Dados, puntería ridícula y aventura cooperativa.",
     videoUrl: "https://www.youtube.com/results?search_query=Dungeon+Fighter+board+game+how+to+play",
     rulesUrl: "https://www.google.com/search?q=Dungeon+Fighter+board+game+rules",
+    playerSetups: [
+      {
+        min: 1,
+        max: 2,
+        steps: [
+          "Con 1–2 jugadores, cada héroe tendrá más responsabilidad.",
+          "Si tu edición permite ajustar dificultad, empezá en modo fácil o normal.",
+          "Conviene elegir héroes con habilidades simples para la primera partida."
+        ]
+      },
+      {
+        min: 3,
+        max: 6,
+        steps: [
+          "Con 3–6 jugadores, dejá suficiente espacio alrededor de la diana.",
+          "Asegurate de que todos puedan tirar dados cómodamente sin golpear componentes.",
+          "Repasá antes de empezar qué tiros son válidos y cuándo el dado debe rebotar."
+        ]
+      }
+    ],
     setup: [
       "Montá la diana o tablero central.",
       "Prepará los mazos de mazmorra, monstruos, equipo y jefe final.",
@@ -312,6 +504,26 @@ const initialGames = [
     vibe: "Investigación, engaño y pistas visuales.",
     videoUrl: "https://www.youtube.com/results?search_query=Deception+Murder+in+Hong+Kong+how+to+play",
     rulesUrl: "https://www.google.com/search?q=Deception+Murder+in+Hong+Kong+rules",
+    playerSetups: [
+      {
+        min: 4,
+        max: 5,
+        steps: [
+          "Usá roles básicos: Forense, Asesino e Investigadores.",
+          "No agregues roles especiales hasta que el grupo domine la dinámica base.",
+          "Cada jugador debe tener sus cartas visibles y ordenadas frente a sí."
+        ]
+      },
+      {
+        min: 6,
+        max: 12,
+        steps: [
+          "Podés agregar roles especiales como Cómplice y Testigo si el grupo ya conoce el juego.",
+          "Asegurate de que el Forense entienda que no puede hablar ni gesticular.",
+          "Cuantos más jugadores haya, más importante es ordenar bien las cartas visibles de cada persona."
+        ]
+      }
+    ],
     setup: [
       "Asigná roles secretos: Forense, Asesino e Investigadores.",
       "Con más jugadores podés sumar Cómplice y Testigo.",
@@ -364,45 +576,67 @@ const emptyForm = {
   howToText: ""
 };
 
-function D12Logo() {
+function D12Logo({ compact = false }) {
   return (
-    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg">
+    <div
+      className={`relative flex items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg transition-all ${
+        compact ? "h-10 w-10" : "h-12 w-12"
+      }`}
+    >
       <svg
-        viewBox="0 0 100 100"
-        className="h-9 w-9"
+        viewBox="0 0 120 100"
+        className={compact ? "h-8 w-9" : "h-10 w-11"}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M50 6 L84 20 L96 52 L74 88 L50 96 L26 88 L4 52 L16 20 Z"
-          stroke="#34d399"
-          strokeWidth="6"
+          d="M38 48 C24 33 13 32 7 42 C15 42 19 47 22 52 C14 52 9 56 7 64 C18 62 27 59 38 52"
+          fill="rgba(103, 232, 249, 0.18)"
+          stroke="#67e8f9"
+          strokeWidth="4"
           strokeLinejoin="round"
-          fill="rgba(52, 211, 153, 0.10)"
+          strokeLinecap="round"
         />
 
         <path
-          d="M50 6 L50 30 M16 20 L36 42 M84 20 L64 42 M4 52 L32 58 M96 52 L68 58 M26 88 L40 66 M74 88 L60 66"
+          d="M82 48 C96 33 107 32 113 42 C105 42 101 47 98 52 C106 52 111 56 113 64 C102 62 93 59 82 52"
+          fill="rgba(103, 232, 249, 0.18)"
           stroke="#67e8f9"
           strokeWidth="4"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+
+        <path
+          d="M60 12 L84 24 L92 50 L76 78 L60 88 L44 78 L28 50 L36 24 Z"
+          stroke="#34d399"
+          strokeWidth="5"
+          strokeLinejoin="round"
+          fill="rgba(52, 211, 153, 0.13)"
+        />
+
+        <path
+          d="M60 12 L60 31 M36 24 L49 42 M84 24 L71 42 M28 50 L47 55 M92 50 L73 55 M44 78 L53 63 M76 78 L67 63"
+          stroke="#67e8f9"
+          strokeWidth="3"
           strokeLinecap="round"
           opacity="0.75"
         />
 
         <circle
-          cx="50"
+          cx="60"
           cy="52"
-          r="23"
-          fill="rgba(15, 23, 42, 0.9)"
+          r="19"
+          fill="rgba(15, 23, 42, 0.92)"
           stroke="#34d399"
-          strokeWidth="4"
+          strokeWidth="3.5"
         />
 
         <text
-          x="50"
-          y="60"
+          x="60"
+          y="59"
           textAnchor="middle"
-          fontSize="25"
+          fontSize="21"
           fontWeight="900"
           fill="#a7f3d0"
           fontFamily="Arial, sans-serif"
@@ -424,6 +658,16 @@ function timeLabel(game) {
   if (game.timeMax <= 25) return "Rápido";
   if (game.timeMax <= 45) return "Medio";
   return "Largo";
+}
+
+function getPlayerSpecificSetup(game, players) {
+  if (!game.playerSetups) return [];
+
+  const match = game.playerSetups.find(
+    (rule) => players >= rule.min && players <= rule.max
+  );
+
+  return match ? match.steps : [];
 }
 
 function Chip({ children, variant = "default" }) {
@@ -508,6 +752,7 @@ export default function App() {
   const [modeFilter, setModeFilter] = useState("Todos");
   const [timeFilter, setTimeFilter] = useState("Todos");
   const [showFilters, setShowFilters] = useState(false);
+  const [isCompactHeader, setIsCompactHeader] = useState(false);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(emptyForm);
 
@@ -528,6 +773,17 @@ export default function App() {
   });
 
   const games = useMemo(() => [...initialGames, ...customGames], [customGames]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsCompactHeader(window.scrollY > 90);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("mesa-juegos-favs", JSON.stringify(favs));
@@ -610,13 +866,15 @@ export default function App() {
         : ["Prepará los componentes del juego según el reglamento."],
       howTo: howTo.length
         ? howTo
-        : ["Jugá siguiendo la secuencia indicada por el reglamento."]
+        : ["Jugá siguiendo la secuencia indicada por el reglamento."],
+      playerSetups: []
     };
 
     setCustomGames((prev) => [newGame, ...prev]);
     setSelected(newGame);
     setForm(emptyForm);
     setScreen("detail");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const toggleFav = (id) => {
@@ -633,12 +891,17 @@ export default function App() {
   };
 
   if (screen === "detail" && selected) {
+    const playerSpecificSetup = getPlayerSpecificSetup(selected, players);
+
     return (
       <div className="min-h-screen bg-[#031313] text-slate-100">
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
             <button
-              onClick={() => setScreen("home")}
+              onClick={() => {
+                setScreen("home");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
             >
               <ArrowLeft size={16} />
@@ -719,6 +982,29 @@ export default function App() {
                 <ExternalLink size={15} />
               </a>
             </div>
+
+            {playerSpecificSetup.length > 0 && (
+              <section>
+                <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
+                  <Users className="text-emerald-300" />
+                  Seteo para {players} jugadores
+                </h2>
+
+                <ol className="space-y-2">
+                  {playerSpecificSetup.map((step, index) => (
+                    <li
+                      key={index}
+                      className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50"
+                    >
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">
+                        {index + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
 
             <section>
               <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
@@ -928,36 +1214,46 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#031313] text-slate-100">
       <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-        <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 pb-4 pt-4 backdrop-blur-xl">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <D12Logo />
+        <div
+          className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 ${
+            isCompactHeader ? "pb-3 pt-3" : "pb-4 pt-4"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <D12Logo compact={isCompactHeader} />
 
-              <div>
+            <div>
+              <h1
+                className={`font-black text-white transition-all ${
+                  isCompactHeader ? "text-xl" : "text-2xl"
+                }`}
+              >
+                {APP_NAME}
+              </h1>
+
+              {!isCompactHeader && (
                 <p className="text-xs font-black uppercase tracking-wide text-emerald-300">
                   {APP_SUBTITLE}
                 </p>
-
-                <h1 className="text-2xl font-black text-white">
-                  {APP_NAME}
-                </h1>
-              </div>
+              )}
             </div>
-
-            <button
-              onClick={() => setScreen("add")}
-              className="flex shrink-0 items-center gap-2 rounded-2xl bg-emerald-400 px-3 py-2 text-sm font-black text-slate-950"
-            >
-              <PlusCircle size={16} />
-              Agregar
-            </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1.6fr]">
-            <div className="rounded-3xl border border-emerald-400/25 bg-slate-900/80 p-2 text-center">
-              <p className="text-[10px] font-bold uppercase text-emerald-200">
-                Participantes
-              </p>
+          <div
+            className={`grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-[1fr_1.6fr] ${
+              isCompactHeader ? "mt-3" : "mt-4"
+            }`}
+          >
+            <div
+              className={`rounded-3xl border border-emerald-400/25 bg-slate-900/80 text-center transition-all ${
+                isCompactHeader ? "p-1.5" : "p-2"
+              }`}
+            >
+              {!isCompactHeader && (
+                <p className="text-[10px] font-bold uppercase text-emerald-200">
+                  Participantes
+                </p>
+              )}
 
               <div className="flex items-center justify-center gap-2">
                 <button
@@ -967,7 +1263,11 @@ export default function App() {
                   <Minus size={15} />
                 </button>
 
-                <span className="w-8 text-center text-2xl font-black">
+                <span
+                  className={`w-8 text-center font-black transition-all ${
+                    isCompactHeader ? "text-xl" : "text-2xl"
+                  }`}
+                >
                   {players}
                 </span>
 
@@ -987,12 +1287,18 @@ export default function App() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar juego..."
-                className="h-full min-h-[58px] w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-300"
+                className={`w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 outline-none transition-all focus:ring-2 focus:ring-emerald-300 ${
+                  isCompactHeader ? "h-11" : "h-full min-h-[58px]"
+                }`}
               />
             </div>
           </div>
 
-          <div className="mt-4 rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3">
+          <div
+            className={`rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3 transition-all duration-300 ${
+              isCompactHeader ? "mt-3" : "mt-4"
+            }`}
+          >
             <button
               type="button"
               onClick={() => setShowFilters((value) => !value)}
@@ -1006,10 +1312,12 @@ export default function App() {
                 <div className="text-left">
                   <p className="text-sm font-black text-white">Filtros</p>
 
-                  <p className="mt-0.5 text-xs leading-4 text-slate-400">
-                    {onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} ·{" "}
-                    {timeFilter} · {modeFilter}
-                  </p>
+                  {!isCompactHeader && (
+                    <p className="mt-0.5 text-xs leading-4 text-slate-400">
+                      {onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} ·{" "}
+                      {timeFilter} · {modeFilter}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1105,6 +1413,7 @@ export default function App() {
                 onClick={() => {
                   setSelected(game);
                   setScreen("detail");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="w-full rounded-3xl border border-slate-700/80 bg-slate-900/90 p-4 text-left shadow-lg transition active:scale-[0.99]"
               >
