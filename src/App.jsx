@@ -13,12 +13,15 @@ import {
   PlayCircle,
   Home,
   Heart,
-  Smartphone,
   Dice5,
-  Filter
+  Filter,
+  ExternalLink,
+  Save,
+  Trash2,
+  PlusCircle
 } from "lucide-react";
 
-const games = [
+const initialGames = [
   {
     id: "secret-hitler",
     name: "Secret Hitler",
@@ -31,6 +34,8 @@ const games = [
     age: "13+",
     level: "Medio",
     vibe: "Debate, engaño y votaciones tensas.",
+    videoUrl: "https://www.youtube.com/results?search_query=Secret+Hitler+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=Secret+Hitler+reglas+español",
     setup: [
       "Elegí el tablero fascista correspondiente a la cantidad de jugadores y colocá también el tablero liberal.",
       "Mezclá las cartas de políticas liberales y fascistas para formar el mazo de políticas.",
@@ -60,6 +65,8 @@ const games = [
     age: "7+",
     level: "Bajo",
     vibe: "Caos, risas y trampas permitidas.",
+    videoUrl: "https://www.youtube.com/results?search_query=Polilla+Tramposa+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=Polilla+Tramposa+reglas",
     setup: [
       "Separá la carta de Chinche Guardián y entregásela al jugador inicial.",
       "Mezclá el resto de las cartas.",
@@ -88,6 +95,8 @@ const games = [
     age: "12+",
     level: "Medio",
     vibe: "Paranoia, sospechas e infección.",
+    videoUrl: "https://www.youtube.com/results?search_query=El+Huésped+juego+de+mesa+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=El+Huésped+juego+de+mesa+reglas",
     setup: [
       "Separá las cartas necesarias según la cantidad de jugadores.",
       "Repartí un rol secreto a cada jugador.",
@@ -116,6 +125,8 @@ const games = [
     age: "7+",
     level: "Bajo",
     vibe: "Reflejos, velocidad y búsqueda de gemas.",
+    videoUrl: "https://www.youtube.com/results?search_query=La+Morada+Maldita+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=La+Morada+Maldita+reglas",
     setup: [
       "Colocá todas las gemas visibles en el centro de la mesa.",
       "Dejá la joya morada al alcance de todos.",
@@ -144,6 +155,8 @@ const games = [
     age: "10+",
     level: "Medio",
     vibe: "Escape contrarreloj de una casona con una amenaza cerca.",
+    videoUrl: "https://www.youtube.com/results?search_query=Bajo+Amenaza+juego+de+mesa+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=Bajo+Amenaza+juego+de+mesa+reglas",
     setup: [
       "Prepará el mazo inicial siguiendo el reglamento de tu edición.",
       "Separá cartas especiales como salida, llave, amenaza o asesino si corresponde.",
@@ -172,6 +185,8 @@ const games = [
     age: "12+",
     level: "Medio",
     vibe: "Acusaciones, equipos secretos y traiciones.",
+    videoUrl: "https://www.youtube.com/results?search_query=Líderes+de+Euphoria+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=Líderes+de+Euphoria+reglas",
     setup: [
       "Quitá reclutas y láseres con números mayores a la cantidad de jugadores.",
       "Separá los dos Líderes y mezclá los reclutas necesarios.",
@@ -200,6 +215,8 @@ const games = [
     age: "10+",
     level: "Bajo",
     vibe: "Imágenes surrealistas e intuición con pistas limitadas.",
+    videoUrl: "https://www.youtube.com/results?search_query=Musa+juego+de+mesa+como+jugar",
+    rulesUrl: "https://www.google.com/search?q=Musa+juego+de+mesa+reglas",
     setup: [
       "Dividan al grupo en dos equipos equilibrados.",
       "Mezclá las cartas de imagen u obra maestra.",
@@ -228,6 +245,8 @@ const games = [
     age: "8+",
     level: "Medio",
     vibe: "Alianzas, traición y consejos tribales.",
+    videoUrl: "https://www.youtube.com/results?search_query=Survivor+The+Tribe+Has+Spoken+board+game+how+to+play",
+    rulesUrl: "https://www.google.com/search?q=Survivor+The+Tribe+Has+Spoken+board+game+rules",
     setup: [
       "Cada jugador elige un color o personaje.",
       "Prepará las cartas de acción.",
@@ -256,6 +275,8 @@ const games = [
     age: "8+",
     level: "Medio",
     vibe: "Dados, puntería ridícula y aventura cooperativa.",
+    videoUrl: "https://www.youtube.com/results?search_query=Dungeon+Fighter+board+game+how+to+play",
+    rulesUrl: "https://www.google.com/search?q=Dungeon+Fighter+board+game+rules",
     setup: [
       "Montá la diana o tablero central.",
       "Prepará los mazos de mazmorra, monstruos, equipo y jefe final.",
@@ -284,6 +305,8 @@ const games = [
     age: "14+",
     level: "Medio",
     vibe: "Investigación, engaño y pistas visuales.",
+    videoUrl: "https://www.youtube.com/results?search_query=Deception+Murder+in+Hong+Kong+how+to+play",
+    rulesUrl: "https://www.google.com/search?q=Deception+Murder+in+Hong+Kong+rules",
     setup: [
       "Asigná roles secretos: Forense, Asesino e Investigadores.",
       "Con más jugadores podés sumar Cómplice y Testigo.",
@@ -306,6 +329,23 @@ const games = [
 const typeOptions = ["Todos", "Roles ocultos", "Party", "Visual", "Cooperativo", "Social", "Creativo", "Estrategia", "Destreza", "Deducción"];
 const modeOptions = ["Todos", "Competitivo", "Cooperativo", "Equipos"];
 const timeOptions = ["Todos", "Rápido", "Medio", "Largo"];
+
+const emptyForm = {
+  name: "",
+  min: 2,
+  max: 6,
+  type: "Party",
+  mode: "Competitivo",
+  timeMin: 20,
+  timeMax: 30,
+  age: "",
+  level: "Medio",
+  vibe: "",
+  videoUrl: "",
+  rulesUrl: "",
+  setupText: "",
+  howToText: ""
+};
 
 function timeText(game) {
   return game.timeMin === game.timeMax
@@ -335,6 +375,58 @@ function Chip({ children, variant = "default" }) {
   );
 }
 
+function LabeledSelect({ label, value, onChange, options }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
+        {label}
+      </span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-10 w-full rounded-2xl border border-cyan-400/25 bg-slate-900 px-3 text-xs font-bold text-slate-100 outline-none focus:ring-2 focus:ring-emerald-300"
+      >
+        {options.map((option) => (
+          <option key={option}>{option}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Field({ label, value, onChange, type = "text", placeholder = "" }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-bold text-slate-300">
+        {label}
+      </span>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-300"
+      />
+    </label>
+  );
+}
+
+function TextAreaField({ label, value, onChange, placeholder }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-bold text-slate-300">
+        {label}
+      </span>
+      <textarea
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="min-h-[110px] w-full rounded-2xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-300"
+      />
+    </label>
+  );
+}
+
 export default function App() {
   const [screen, setScreen] = useState("home");
   const [players, setPlayers] = useState(5);
@@ -344,6 +436,16 @@ export default function App() {
   const [modeFilter, setModeFilter] = useState("Todos");
   const [timeFilter, setTimeFilter] = useState("Todos");
   const [selected, setSelected] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+
+  const [customGames, setCustomGames] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("mesa-juegos-custom")) || [];
+    } catch {
+      return [];
+    }
+  });
+
   const [favs, setFavs] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("mesa-juegos-favs")) || [];
@@ -352,11 +454,17 @@ export default function App() {
     }
   });
 
+  const games = useMemo(() => [...initialGames, ...customGames], [customGames]);
+
   useEffect(() => {
     localStorage.setItem("mesa-juegos-favs", JSON.stringify(favs));
   }, [favs]);
 
-  const playable = (game) => players >= game.min && players <= game.max;
+  useEffect(() => {
+    localStorage.setItem("mesa-juegos-custom", JSON.stringify(customGames));
+  }, [customGames]);
+
+  const playable = (game) => players >= Number(game.min) && players <= Number(game.max);
 
   const visibleGames = useMemo(() => {
     return games
@@ -371,7 +479,7 @@ export default function App() {
           .includes(query.toLowerCase())
       )
       .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
-  }, [players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, favs, screen]);
+  }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, favs, screen]);
 
   const playableCount = games.filter(playable).length;
 
@@ -379,6 +487,51 @@ export default function App() {
     setFavs((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+  };
+
+  const saveManualGame = () => {
+    if (!form.name.trim()) return;
+
+    const setup = form.setupText
+      .split("\n")
+      .map((x) => x.trim())
+      .filter(Boolean);
+
+    const howTo = form.howToText
+      .split("\n")
+      .map((x) => x.trim())
+      .filter(Boolean);
+
+    const newGame = {
+      id: `custom-${Date.now()}`,
+      custom: true,
+      name: form.name.trim(),
+      min: Number(form.min),
+      max: Number(form.max),
+      type: form.type,
+      mode: form.mode,
+      timeMin: Number(form.timeMin),
+      timeMax: Number(form.timeMax),
+      age: form.age || "N/D",
+      level: form.level,
+      vibe: form.vibe || "Juego agregado manualmente.",
+      videoUrl: form.videoUrl || `https://www.youtube.com/results?search_query=${encodeURIComponent(form.name + " como jugar")}`,
+      rulesUrl: form.rulesUrl || `https://www.google.com/search?q=${encodeURIComponent(form.name + " reglas")}`,
+      setup: setup.length ? setup : ["Prepará los componentes del juego según el reglamento."],
+      howTo: howTo.length ? howTo : ["Jugá siguiendo la secuencia indicada por el reglamento."]
+    };
+
+    setCustomGames((prev) => [newGame, ...prev]);
+    setSelected(newGame);
+    setForm(emptyForm);
+    setScreen("detail");
+  };
+
+  const deleteCustomGame = (id) => {
+    setCustomGames((prev) => prev.filter((game) => game.id !== id));
+    setFavs((prev) => prev.filter((fav) => fav !== id));
+    setSelected(null);
+    setScreen("home");
   };
 
   if (screen === "detail" && selected) {
@@ -401,9 +554,11 @@ export default function App() {
                 <Chip variant={playable(selected) ? "ok" : "danger"}>
                   {playable(selected) ? "Se puede jugar" : "No entra con este grupo"}
                 </Chip>
+
                 <h1 className="mt-4 text-3xl font-black text-white">
                   {selected.name}
                 </h1>
+
                 <p className="mt-2 text-sm text-cyan-100">
                   {selected.vibe}
                 </p>
@@ -441,6 +596,28 @@ export default function App() {
                 <p className="text-xs text-slate-400">Nivel</p>
                 <b>{selected.level}</b>
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href={selected.videoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-3 py-3 text-sm font-black text-slate-950"
+              >
+                Video
+                <ExternalLink size={15} />
+              </a>
+
+              <a
+                href={selected.rulesUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950"
+              >
+                Instructivo
+                <ExternalLink size={15} />
+              </a>
             </div>
 
             <section>
@@ -485,10 +662,158 @@ export default function App() {
               </ol>
             </section>
 
+            {selected.custom && (
+              <button
+                onClick={() => deleteCustomGame(selected.id)}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white"
+              >
+                <Trash2 size={16} />
+                Borrar juego agregado
+              </button>
+            )}
+
             <div className="rounded-3xl border border-amber-300/35 bg-amber-300/10 p-3 text-sm text-amber-100">
               <b>Nota:</b> esta guía sirve para arrancar rápido. Para desempates, variantes o casos especiales, revisá el reglamento de tu edición.
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "add") {
+    return (
+      <div className="min-h-screen bg-[#031313] text-slate-100">
+        <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
+          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
+            <button
+              onClick={() => setScreen("home")}
+              className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
+            >
+              <ArrowLeft size={16} />
+              Volver
+            </button>
+
+            <h1 className="mt-4 text-2xl font-black text-white">
+              Agregar juego
+            </h1>
+
+            <p className="mt-1 text-sm text-slate-300">
+              Cargá un juego manualmente. Se guarda solo en este dispositivo.
+            </p>
+          </div>
+
+          <main className="space-y-3 p-4">
+            <Field
+              label="Nombre del juego"
+              value={form.name}
+              onChange={(value) => setForm({ ...form, name: value })}
+              placeholder="Ej: Codenames"
+            />
+
+            <div className="grid grid-cols-2 gap-2">
+              <Field
+                label="Mín. jugadores"
+                type="number"
+                value={form.min}
+                onChange={(value) => setForm({ ...form, min: value })}
+              />
+
+              <Field
+                label="Máx. jugadores"
+                type="number"
+                value={form.max}
+                onChange={(value) => setForm({ ...form, max: value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Field
+                label="Tiempo mín."
+                type="number"
+                value={form.timeMin}
+                onChange={(value) => setForm({ ...form, timeMin: value })}
+              />
+
+              <Field
+                label="Tiempo máx."
+                type="number"
+                value={form.timeMax}
+                onChange={(value) => setForm({ ...form, timeMax: value })}
+              />
+            </div>
+
+            <LabeledSelect
+              label="Tipo"
+              value={form.type}
+              onChange={(value) => setForm({ ...form, type: value })}
+              options={typeOptions.filter((x) => x !== "Todos")}
+            />
+
+            <LabeledSelect
+              label="Modo"
+              value={form.mode}
+              onChange={(value) => setForm({ ...form, mode: value })}
+              options={modeOptions.filter((x) => x !== "Todos")}
+            />
+
+            <LabeledSelect
+              label="Dificultad"
+              value={form.level}
+              onChange={(value) => setForm({ ...form, level: value })}
+              options={["Bajo", "Medio", "Alto"]}
+            />
+
+            <Field
+              label="Edad sugerida"
+              value={form.age}
+              onChange={(value) => setForm({ ...form, age: value })}
+              placeholder="Ej: 10+"
+            />
+
+            <Field
+              label="Resumen"
+              value={form.vibe}
+              onChange={(value) => setForm({ ...form, vibe: value })}
+              placeholder="Ej: Deducción rápida por equipos"
+            />
+
+            <Field
+              label="Link a video"
+              value={form.videoUrl}
+              onChange={(value) => setForm({ ...form, videoUrl: value })}
+              placeholder="Opcional"
+            />
+
+            <Field
+              label="Link a instructivo/reglas"
+              value={form.rulesUrl}
+              onChange={(value) => setForm({ ...form, rulesUrl: value })}
+              placeholder="Opcional"
+            />
+
+            <TextAreaField
+              label="Preparación"
+              value={form.setupText}
+              onChange={(value) => setForm({ ...form, setupText: value })}
+              placeholder={"Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."}
+            />
+
+            <TextAreaField
+              label="Cómo se juega"
+              value={form.howToText}
+              onChange={(value) => setForm({ ...form, howToText: value })}
+              placeholder={"Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."}
+            />
+
+            <button
+              onClick={saveManualGame}
+              className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950"
+            >
+              <Save size={18} />
+              Guardar juego
+            </button>
+          </main>
         </div>
       </div>
     );
@@ -504,14 +829,19 @@ export default function App() {
                 <Dice5 size={16} />
                 Noche de juegos
               </p>
+
               <h1 className="text-2xl font-black text-white">
                 Mesa lista
               </h1>
             </div>
 
-            <div className="rounded-2xl bg-slate-800 p-3">
-              <Smartphone size={18} className="text-cyan-300" />
-            </div>
+            <button
+              onClick={() => setScreen("add")}
+              className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-3 py-2 text-sm font-black text-slate-950"
+            >
+              <PlusCircle size={16} />
+              Agregar
+            </button>
           </div>
 
           <div className="mt-4 grid grid-cols-[1fr_1.6fr] gap-2">
@@ -543,6 +873,7 @@ export default function App() {
 
             <div className="relative">
               <Search className="absolute left-3 top-4 h-4 w-4 text-cyan-200" />
+
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -552,10 +883,10 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             <button
               onClick={() => setOnlyPlayable((v) => !v)}
-              className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-2 text-xs font-black ${
+              className={`flex h-10 items-center justify-center gap-1 rounded-2xl text-xs font-black ${
                 onlyPlayable
                   ? "bg-emerald-400 text-slate-950"
                   : "bg-slate-800 text-slate-100"
@@ -565,35 +896,26 @@ export default function App() {
               {onlyPlayable ? "Jugables" : "Todos"}
             </button>
 
-            <select
+            <LabeledSelect
+              label="Tipo"
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="rounded-full border border-cyan-400/25 bg-slate-900 px-3 text-xs text-slate-100 outline-none"
-            >
-              {typeOptions.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
-            </select>
+              onChange={setTypeFilter}
+              options={typeOptions}
+            />
 
-            <select
+            <LabeledSelect
+              label="Duración"
               value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value)}
-              className="rounded-full border border-cyan-400/25 bg-slate-900 px-3 text-xs text-slate-100 outline-none"
-            >
-              {timeOptions.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
-            </select>
+              onChange={setTimeFilter}
+              options={timeOptions}
+            />
 
-            <select
+            <LabeledSelect
+              label="Modo"
               value={modeFilter}
-              onChange={(e) => setModeFilter(e.target.value)}
-              className="rounded-full border border-cyan-400/25 bg-slate-900 px-3 text-xs text-slate-100 outline-none"
-            >
-              {modeOptions.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
-            </select>
+              onChange={setModeFilter}
+              options={modeOptions}
+            />
           </div>
         </div>
 
@@ -604,6 +926,7 @@ export default function App() {
                 <p className="text-sm font-semibold opacity-80">
                   Disponibles ahora
                 </p>
+
                 <p className="text-4xl font-black">
                   {visibleGames.length}/{games.length}
                 </p>
@@ -685,7 +1008,7 @@ export default function App() {
           })}
         </main>
 
-        <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-md -translate-x-1/2 grid-cols-2 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">
+        <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-md -translate-x-1/2 grid-cols-3 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">
           <button
             onClick={() => setScreen("home")}
             className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
@@ -708,6 +1031,18 @@ export default function App() {
           >
             <Heart size={20} />
             Favoritos
+          </button>
+
+          <button
+            onClick={() => setScreen("add")}
+            className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
+              screen === "add"
+                ? "bg-emerald-400 text-slate-950"
+                : "text-slate-300"
+            }`}
+          >
+            <PlusCircle size={20} />
+            Agregar
           </button>
         </nav>
       </div>
