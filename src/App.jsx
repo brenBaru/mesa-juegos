@@ -13,7 +13,6 @@ import {
   PlayCircle,
   Home,
   Heart,
-  Dice5,
   Filter,
   ExternalLink,
   Save,
@@ -23,6 +22,9 @@ import {
   ChevronUp,
   SlidersHorizontal
 } from "lucide-react";
+
+const APP_NAME = "Roll For Game";
+const APP_SUBTITLE = "Elige tu próxima partida";
 
 const initialGames = [
   {
@@ -362,6 +364,56 @@ const emptyForm = {
   howToText: ""
 };
 
+function D12Logo() {
+  return (
+    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg">
+      <svg
+        viewBox="0 0 100 100"
+        className="h-9 w-9"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M50 6 L84 20 L96 52 L74 88 L50 96 L26 88 L4 52 L16 20 Z"
+          stroke="#34d399"
+          strokeWidth="6"
+          strokeLinejoin="round"
+          fill="rgba(52, 211, 153, 0.10)"
+        />
+
+        <path
+          d="M50 6 L50 30 M16 20 L36 42 M84 20 L64 42 M4 52 L32 58 M96 52 L68 58 M26 88 L40 66 M74 88 L60 66"
+          stroke="#67e8f9"
+          strokeWidth="4"
+          strokeLinecap="round"
+          opacity="0.75"
+        />
+
+        <circle
+          cx="50"
+          cy="52"
+          r="23"
+          fill="rgba(15, 23, 42, 0.9)"
+          stroke="#34d399"
+          strokeWidth="4"
+        />
+
+        <text
+          x="50"
+          y="60"
+          textAnchor="middle"
+          fontSize="25"
+          fontWeight="900"
+          fill="#a7f3d0"
+          fontFamily="Arial, sans-serif"
+        >
+          12
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 function timeText(game) {
   return game.timeMin === game.timeMax
     ? `${game.timeMin} min`
@@ -384,7 +436,9 @@ function Chip({ children, variant = "default" }) {
   };
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${styles[variant]}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${styles[variant]}`}
+    >
       {children}
     </span>
   );
@@ -483,7 +537,8 @@ export default function App() {
     localStorage.setItem("mesa-juegos-custom", JSON.stringify(customGames));
   }, [customGames]);
 
-  const playable = (game) => players >= Number(game.min) && players <= Number(game.max);
+  const playable = (game) =>
+    players >= Number(game.min) && players <= Number(game.max);
 
   const visibleGames = useMemo(() => {
     return games
@@ -497,8 +552,22 @@ export default function App() {
           .toLowerCase()
           .includes(query.toLowerCase())
       )
-      .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
-  }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, favs, screen]);
+      .sort(
+        (a, b) =>
+          Number(playable(b)) - Number(playable(a)) ||
+          a.name.localeCompare(b.name)
+      );
+  }, [
+    games,
+    players,
+    onlyPlayable,
+    typeFilter,
+    modeFilter,
+    timeFilter,
+    query,
+    favs,
+    screen
+  ]);
 
   const saveManualGame = () => {
     if (!form.name.trim()) return;
@@ -528,12 +597,20 @@ export default function App() {
       vibe: form.vibe || "Juego agregado manualmente.",
       videoUrl:
         form.videoUrl ||
-        `https://www.youtube.com/results?search_query=${encodeURIComponent(form.name + " como jugar")}`,
+        `https://www.youtube.com/results?search_query=${encodeURIComponent(
+          form.name + " como jugar"
+        )}`,
       rulesUrl:
         form.rulesUrl ||
-        `https://www.google.com/search?q=${encodeURIComponent(form.name + " reglas")}`,
-      setup: setup.length ? setup : ["Prepará los componentes del juego según el reglamento."],
-      howTo: howTo.length ? howTo : ["Jugá siguiendo la secuencia indicada por el reglamento."]
+        `https://www.google.com/search?q=${encodeURIComponent(
+          form.name + " reglas"
+        )}`,
+      setup: setup.length
+        ? setup
+        : ["Prepará los componentes del juego según el reglamento."],
+      howTo: howTo.length
+        ? howTo
+        : ["Jugá siguiendo la secuencia indicada por el reglamento."]
     };
 
     setCustomGames((prev) => [newGame, ...prev]);
@@ -573,7 +650,9 @@ export default function App() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <Chip variant={playable(selected) ? "ok" : "danger"}>
-                  {playable(selected) ? "Se puede jugar" : "No entra con este grupo"}
+                  {playable(selected)
+                    ? "Se puede jugar"
+                    : "No entra con este grupo"}
                 </Chip>
 
                 <h1 className="mt-4 text-3xl font-black text-white">
@@ -694,7 +773,9 @@ export default function App() {
             )}
 
             <div className="rounded-3xl border border-amber-300/35 bg-amber-300/10 p-3 text-sm text-amber-100">
-              <b>Nota:</b> esta guía sirve para arrancar rápido. Para desempates, variantes o casos especiales, revisá el reglamento de tu edición.
+              <b>Nota:</b> esta guía sirve para arrancar rápido. Para
+              desempates, variantes o casos especiales, revisá el reglamento de
+              tu edición.
             </div>
           </div>
         </div>
@@ -817,14 +898,18 @@ export default function App() {
               label="Preparación"
               value={form.setupText}
               onChange={(value) => setForm({ ...form, setupText: value })}
-              placeholder={"Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."}
+              placeholder={
+                "Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."
+              }
             />
 
             <TextAreaField
               label="Cómo se juega"
               value={form.howToText}
               onChange={(value) => setForm({ ...form, howToText: value })}
-              placeholder={"Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."}
+              placeholder={
+                "Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."
+              }
             />
 
             <button
@@ -844,21 +929,24 @@ export default function App() {
     <div className="min-h-screen bg-[#031313] text-slate-100">
       <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
         <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 pb-4 pt-4 backdrop-blur-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="flex items-center gap-1 text-xs font-black text-emerald-300">
-                <Dice5 size={16} />
-                Noche de juegos
-              </p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <D12Logo />
 
-              <h1 className="text-2xl font-black text-white">
-                Mesa lista
-              </h1>
+              <div>
+                <p className="text-xs font-black uppercase tracking-wide text-emerald-300">
+                  {APP_SUBTITLE}
+                </p>
+
+                <h1 className="text-2xl font-black text-white">
+                  {APP_NAME}
+                </h1>
+              </div>
             </div>
 
             <button
               onClick={() => setScreen("add")}
-              className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-3 py-2 text-sm font-black text-slate-950"
+              className="flex shrink-0 items-center gap-2 rounded-2xl bg-emerald-400 px-3 py-2 text-sm font-black text-slate-950"
             >
               <PlusCircle size={16} />
               Agregar
@@ -916,18 +1004,21 @@ export default function App() {
                 </div>
 
                 <div className="text-left">
-                  <p className="text-sm font-black text-white">
-                    Filtros
-                  </p>
+                  <p className="text-sm font-black text-white">Filtros</p>
 
                   <p className="mt-0.5 text-xs leading-4 text-slate-400">
-                    {onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} · {timeFilter} · {modeFilter}
+                    {onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} ·{" "}
+                    {timeFilter} · {modeFilter}
                   </p>
                 </div>
               </div>
 
               <div className="rounded-full bg-slate-800 p-2 text-slate-200">
-                {showFilters ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+                {showFilters ? (
+                  <ChevronUp size={17} />
+                ) : (
+                  <ChevronDown size={17} />
+                )}
               </div>
             </button>
 
@@ -994,7 +1085,8 @@ export default function App() {
             </div>
 
             <p className="mt-2 text-xs font-semibold opacity-80">
-              Filtrando para {players} participantes. Tocá un juego para ver preparación y cómo jugar.
+              Filtrando para {players} participantes. Tocá un juego para ver
+              preparación y cómo jugar.
             </p>
           </div>
 
@@ -1057,9 +1149,7 @@ export default function App() {
                     {timeText(game)}
                   </Chip>
 
-                  <Chip variant="purple">
-                    {timeLabel(game)}
-                  </Chip>
+                  <Chip variant="purple">{timeLabel(game)}</Chip>
                 </div>
               </button>
             );
