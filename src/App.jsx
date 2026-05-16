@@ -1,9 +1,9 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Users,
+  Star,  
   Clock,
-  Star,
   StarOff,
   Plus,
   Minus,
@@ -46,48 +46,45 @@ const initialGames = [
         min: 5,
         max: 6,
         steps: [
-          "Usá el tablero correspondiente a 5–6 jugadores.",
+          "Usá el tablero de 5–6 jugadores.",
           "Prepará 3 liberales, 1 fascista y Hitler.",
-          "En la fase inicial, Hitler y el fascista se reconocen siguiendo el procedimiento del reglamento.",
-          "Con pocos jugadores hay menos margen de error, así que conviene explicar bien cómo funcionan las votaciones."
+          "Explicá bien la fase de votación porque hay poco margen de error."
         ]
       },
       {
         min: 7,
         max: 8,
         steps: [
-          "Usá el tablero correspondiente a 7–8 jugadores.",
-          "Prepará 4–5 liberales según cantidad, 2 fascistas y Hitler.",
-          "Los fascistas se reconocen entre sí y reconocen a Hitler según el procedimiento inicial.",
-          "Hitler debe jugar con más cautela porque hay más jugadores y más debate social."
+          "Usá el tablero de 7–8 jugadores.",
+          "Prepará 4–5 liberales, 2 fascistas y Hitler.",
+          "Los fascistas se reconocen entre sí en la fase inicial."
         ]
       },
       {
         min: 9,
         max: 10,
         steps: [
-          "Usá el tablero correspondiente a 9–10 jugadores.",
+          "Usá el tablero de 9–10 jugadores.",
           "Prepará el set completo de roles para grupo grande.",
-          "Habrá más fascistas y más ruido social, así que conviene explicar bien la fase de votación antes de empezar.",
-          "Asegurate de que todos entiendan las restricciones para elegir Presidente y Canciller."
+          "Repasá restricciones de Presidente y Canciller antes de empezar."
         ]
       }
     ],
     setup: [
-      "Elegí el tablero fascista correspondiente a la cantidad de jugadores y colocá también el tablero liberal.",
-      "Mezclá las cartas de políticas liberales y fascistas para formar el mazo de políticas.",
-      "Prepará un sobre o conjunto de cartas para cada jugador con rol secreto, afiliación y cartas de voto.",
-      "Repartí los roles en secreto. Nadie debe revelar su rol al inicio.",
-      "Elegí al primer Presidente y realizá la fase inicial de reconocimiento con ojos cerrados según la cantidad de jugadores."
+      "Elegí el tablero correspondiente a la cantidad de jugadores.",
+      "Mezclá políticas liberales y fascistas para formar el mazo.",
+      "Prepará roles secretos, afiliaciones y cartas de voto.",
+      "Repartí roles en secreto.",
+      "Elegí el primer Presidente y hacé la fase inicial de ojos cerrados."
     ],
     howTo: [
-      "El Presidente propone a una persona como Canciller.",
-      "Todos votan si aceptan o rechazan ese gobierno.",
-      "Si el gobierno es aprobado, el Presidente roba 3 políticas, descarta 1 y pasa 2 al Canciller.",
-      "El Canciller descarta 1 política y promulga la restante.",
-      "Si se promulgan políticas fascistas, pueden activarse poderes especiales.",
-      "Ganan los liberales si promulgan 5 políticas liberales o eliminan a Hitler.",
-      "Ganan los fascistas si promulgan 6 políticas fascistas o si Hitler es elegido Canciller cuando ya hay 3 políticas fascistas."
+      "El Presidente propone un Canciller.",
+      "Todos votan si aceptan el gobierno.",
+      "Si se aprueba, el Presidente roba 3 políticas y descarta 1.",
+      "El Canciller recibe 2 políticas, descarta 1 y promulga la restante.",
+      "Algunas políticas fascistas activan poderes especiales.",
+      "Liberales ganan con 5 políticas liberales o eliminando a Hitler.",
+      "Fascistas ganan con 6 políticas fascistas o si Hitler es Canciller con 3 políticas fascistas en mesa."
     ]
   },
   {
@@ -109,35 +106,33 @@ const initialGames = [
         min: 3,
         max: 3,
         steps: [
-          "Con 3 jugadores, el Chinche Guardián tiene más control visual sobre la mesa.",
-          "Conviene sentarse con suficiente espacio entre jugadores para que las trampas sigan siendo posibles.",
-          "La partida suele ser más táctica porque hay menos distracciones."
+          "Con 3 jugadores, el guardián controla mejor la mesa.",
+          "Dejá espacio suficiente para que las trampas sigan siendo posibles."
         ]
       },
       {
         min: 4,
         max: 5,
         steps: [
-          "Con 4–5 jugadores, dejá más espacio alrededor de la mesa.",
-          "El Chinche Guardián debe poder mirar a todos, pero no puede revisar manos ni zonas ocultas permanentemente.",
-          "La partida suele ser más caótica y graciosa porque hay más oportunidades de distracción."
+          "Con 4–5 jugadores, separen bien las posiciones en la mesa.",
+          "El guardián debe mirar a todos, pero no puede controlar todo el tiempo."
         ]
       }
     ],
     setup: [
-      "Separá la carta de Chinche Guardián y entregásela al jugador inicial.",
-      "Mezclá el resto de las cartas.",
+      "Separá la carta de Chinche Guardián.",
+      "Mezclá el mazo.",
       "Repartí 8 cartas a cada jugador.",
-      "Formá el mazo de robo con las cartas restantes.",
-      "Revelá una carta inicial para formar la pila de descarte."
+      "Formá mazo de robo y pila de descarte.",
+      "Explicá que todos pueden hacer trampa salvo el guardián."
     ],
     howTo: [
-      "En tu turno jugás una carta cuyo número sea inmediatamente superior o inferior al de la carta visible.",
+      "En tu turno jugás una carta inmediatamente superior o inferior a la visible.",
       "Si no podés jugar, robás una carta.",
-      "Todos, excepto el Chinche Guardián, pueden intentar hacer desaparecer cartas sin que los vean.",
-      "El Chinche Guardián observa e intenta atrapar a quienes hacen trampa.",
-      "Si alguien es atrapado, recibe penalización y puede cambiar el guardián.",
-      "Gana quien se queda sin cartas primero. La última carta no puede desaparecer con trampa."
+      "Podés intentar hacer desaparecer cartas sin que te vean.",
+      "El guardián intenta atrapar trampas.",
+      "Si alguien es atrapado, recibe penalización.",
+      "Gana quien se queda sin cartas primero."
     ]
   },
   {
@@ -159,35 +154,32 @@ const initialGames = [
         min: 5,
         max: 7,
         steps: [
-          "Con grupos chicos, la información circula más rápido y cada voto pesa mucho.",
-          "Conviene explicar bien las condiciones de victoria antes de repartir roles.",
-          "Usá solo los roles o cartas recomendadas para partidas base si el grupo no conoce el juego."
+          "Con grupos chicos, cada voto pesa mucho.",
+          "Usá roles básicos si el grupo no conoce el juego."
         ]
       },
       {
         min: 8,
         max: 12,
         steps: [
-          "Con grupos grandes, prepará más espacio para debate y votaciones.",
-          "Asegurate de que todos entiendan cómo se resuelven eventos o fases nocturnas si tu edición las usa.",
-          "Conviene designar a una persona que recuerde el orden de resolución de fases."
+          "Con grupos grandes, prepará espacio para debate.",
+          "Conviene que alguien recuerde el orden de fases."
         ]
       }
     ],
     setup: [
-      "Separá las cartas necesarias según la cantidad de jugadores.",
-      "Repartí un rol secreto a cada jugador.",
-      "Prepará cartas de evento, votación o infección si tu edición las utiliza.",
-      "Explicá los objetivos generales de cada bando sin revelar roles.",
-      "Definan orden de turno o moderador si el reglamento lo requiere."
+      "Separá cartas según cantidad de jugadores.",
+      "Repartí roles secretos.",
+      "Prepará eventos o cartas de infección si tu edición los usa.",
+      "Explicá objetivos generales sin revelar roles."
     ],
     howTo: [
-      "Los jugadores debaten quién podría estar infectado o actuando en contra del grupo.",
-      "Se resuelven eventos o crisis según indique la ronda.",
-      "Los jugadores intentan deducir información a partir de acusaciones, contradicciones y votos.",
-      "Los infectados intentan confundir al grupo y cumplir su condición de victoria.",
-      "Los sanos buscan identificar y aislar la amenaza.",
-      "La partida termina cuando un bando cumple su objetivo."
+      "El grupo debate quién podría estar infectado.",
+      "Se resuelven eventos o crisis.",
+      "Los jugadores votan o acusan según la ronda.",
+      "Los infectados intentan confundir.",
+      "Los sanos intentan detectar la amenaza.",
+      "Gana el bando que cumple su objetivo."
     ]
   },
   {
@@ -209,35 +201,33 @@ const initialGames = [
         min: 2,
         max: 3,
         steps: [
-          "Repartí 5 cartas de reto a cada jugador.",
-          "Dejá las gemas bien separadas para que se vean claramente.",
-          "La partida es más controlada, ideal para explicar reglas o jugar con personas nuevas."
+          "Repartí 5 cartas de reto por jugador.",
+          "Dejá las gemas bien separadas para verlas claramente."
         ]
       },
       {
         min: 4,
         max: 6,
         steps: [
-          "Repartí 4 cartas de reto a cada jugador.",
-          "Asegurate de que todos puedan alcanzar el centro de la mesa.",
-          "Conviene hacer una ronda de prueba rápida antes de empezar la partida real."
+          "Repartí 4 cartas de reto por jugador.",
+          "Asegurate de que todos puedan alcanzar el centro."
         ]
       }
     ],
     setup: [
-      "Colocá todas las gemas visibles en el centro de la mesa.",
+      "Colocá gemas visibles en el centro.",
       "Dejá la joya morada al alcance de todos.",
-      "Mezclá las cartas de reto.",
-      "Repartí las cartas de reto según la cantidad de jugadores.",
-      "Prepará las cartas de maldición o evento si se usan en la partida."
+      "Mezclá cartas de reto.",
+      "Repartí retos según cantidad de jugadores.",
+      "Prepará maldiciones o eventos si se usan."
     ],
     howTo: [
-      "Todos juegan al mismo tiempo.",
-      "Cada jugador revela su reto superior y busca una gema que cumpla la condición.",
-      "Cuando encuentra la gema correcta, la coloca sobre su carta.",
-      "Luego pasa al siguiente reto.",
-      "Quien completa sus retos toma la joya morada y termina la ronda.",
-      "Se revisan aciertos, se aplican efectos y se suman puntos."
+      "Todos juegan simultáneamente.",
+      "Cada jugador revela su reto superior.",
+      "Buscá una gema que cumpla la condición.",
+      "Al encontrarla, ponela sobre la carta.",
+      "Quien completa sus retos toma la joya morada.",
+      "Se revisan aciertos y se suman puntos."
     ]
   },
   {
@@ -260,34 +250,31 @@ const initialGames = [
         max: 4,
         steps: [
           "Con 3–4 jugadores, cada decisión individual pesa más.",
-          "Conviene hablar antes de cada turno para no desperdiciar recursos.",
-          "Si el grupo es nuevo, evitá variantes más difíciles en la primera partida."
+          "Hablen antes de cada turno para no desperdiciar recursos."
         ]
       },
       {
         min: 5,
         max: 6,
         steps: [
-          "Con 5–6 jugadores, el grupo tiene más voces y puede tardar más en decidir.",
-          "Definan una forma rápida de resolver desacuerdos.",
-          "Conviene que una persona recuerde qué amenazas ya aparecieron."
+          "Con 5–6 jugadores, definan cómo resolver desacuerdos rápido.",
+          "Conviene que alguien recuerde qué amenazas ya aparecieron."
         ]
       }
     ],
     setup: [
-      "Prepará el mazo inicial siguiendo el reglamento de tu edición.",
-      "Separá cartas especiales como salida, llave, amenaza o asesino si corresponde.",
-      "Formen la zona de juego, mazo y descarte común.",
-      "Expliquen el objetivo del grupo: escapar antes de que la amenaza los alcance.",
-      "Si usan variante semicooperativa o cómplice, asignen roles antes de empezar."
+      "Prepará el mazo inicial.",
+      "Separá cartas especiales como salida, llave o amenaza.",
+      "Formá zona de juego, mazo y descarte común.",
+      "Expliquen el objetivo: escapar antes de perder."
     ],
     howTo: [
-      "En cada turno se usan cartas para explorar, conseguir recursos o ayudar al equipo.",
-      "El grupo decide cuándo avanzar y cuándo cuidarse.",
-      "Las cartas nuevas mejoran el mazo y abren opciones de escape.",
-      "Las amenazas aumentan la presión y pueden acercar al asesino.",
-      "La comunicación es clave para planear turnos y riesgos.",
-      "Ganan si logran escapar. Pierden si la amenaza alcanza la condición de derrota."
+      "Usen cartas para explorar o conseguir recursos.",
+      "Decidan en grupo cuándo avanzar y cuándo cuidarse.",
+      "Las cartas nuevas mejoran el mazo.",
+      "Las amenazas aumentan la presión.",
+      "Ganan si logran escapar.",
+      "Pierden si la amenaza cumple su condición de derrota."
     ]
   },
   {
@@ -309,35 +296,32 @@ const initialGames = [
         min: 4,
         max: 5,
         steps: [
-          "Quitá todas las cartas o componentes con números superiores a la cantidad de jugadores.",
-          "Con pocos jugadores, cada información revelada pesa mucho más.",
-          "Recordá que mentir es parte del juego y no debe considerarse trampa."
+          "Quitá componentes con números superiores a la cantidad de jugadores.",
+          "Con pocos jugadores, cada dato revelado pesa más."
         ]
       },
       {
         min: 6,
         max: 8,
         steps: [
-          "Quitá reclutas y láseres que indiquen números mayores a la cantidad de jugadores.",
-          "Con más jugadores, revisá bien que todos tengan la cantidad correcta de reclutas y artefactos.",
-          "Antes de empezar, repasá cómo funcionan interrogatorios, disparos y condiciones de victoria."
+          "Quitá reclutas y láseres de números mayores a la cantidad de jugadores.",
+          "Repasá interrogatorios, disparos y condiciones de victoria."
         ]
       }
     ],
     setup: [
-      "Quitá reclutas y láseres con números mayores a la cantidad de jugadores.",
-      "Separá los dos Líderes y mezclá los reclutas necesarios.",
+      "Separá Líderes y reclutas necesarios.",
       "Repartí 3 reclutas boca abajo a cada jugador.",
       "Cada jugador mira y ordena sus reclutas.",
-      "Repartí artefactos y dejá los láseres disponibles."
+      "Repartí artefactos y dejá láseres disponibles."
     ],
     howTo: [
-      "Tu facción se define por mayoría de reclutas o por tener un Líder.",
-      "En tu turno podés interrogar para mirar información parcial de otro jugador.",
-      "Podés decir la verdad o mentir sobre lo que viste.",
+      "Tu facción depende de tus reclutas o de tener un Líder.",
+      "En tu turno podés interrogar.",
+      "Podés mentir o decir la verdad.",
       "El grupo intenta deducir quién tiene cada Líder.",
-      "Los láseres permiten disparar cuando alguien cree haber identificado al rival.",
-      "Gana el equipo que elimina o expone al Líder contrario."
+      "Los láseres permiten disparar.",
+      "Gana quien elimina o expone al Líder rival."
     ]
   },
   {
@@ -359,35 +343,32 @@ const initialGames = [
         min: 2,
         max: 3,
         steps: [
-          "Jugá en modo reducido o cooperativo si tu edición lo permite.",
-          "Si son 2 jugadores, alternen quién da pistas y quién adivina.",
-          "Definan una cantidad corta de puntos para que la partida no se alargue."
+          "Jugá en modo reducido si tu edición lo permite.",
+          "Definan una cantidad corta de puntos."
         ]
       },
       {
         min: 4,
         max: 12,
         steps: [
-          "Dividan el grupo en dos equipos lo más equilibrados posible.",
-          "Alternen quién será la Musa dentro de cada equipo.",
-          "Definan antes de empezar cuántas cartas necesita un equipo para ganar."
+          "Dividan el grupo en dos equipos equilibrados.",
+          "Alternen quién será la Musa."
         ]
       }
     ],
     setup: [
-      "Dividan al grupo en dos equipos equilibrados.",
-      "Mezclá las cartas de imagen u obra maestra.",
-      "Mezclá las cartas de inspiración o restricción de pista.",
-      "Definan cuántas cartas se necesitan para ganar.",
-      "Elegí qué equipo empieza y quién será la Musa."
+      "Formen equipos.",
+      "Mezclá cartas de imagen.",
+      "Mezclá cartas de inspiración o restricción.",
+      "Definan cuántas cartas se necesitan para ganar."
     ],
     howTo: [
-      "El equipo rival elige una imagen objetivo y una restricción de pista.",
-      "La Musa mira la imagen y da una pista respetando la restricción.",
-      "Se mezcla la imagen objetivo con otras imágenes.",
-      "El equipo de la Musa debate cuál imagen coincide con la pista.",
-      "Si aciertan, ganan la carta como punto.",
-      "Gana el primer equipo que alcanza la cantidad acordada de puntos."
+      "El equipo rival elige imagen objetivo y restricción.",
+      "La Musa da una pista respetando la restricción.",
+      "Se mezcla la imagen con otras opciones.",
+      "El equipo intenta adivinar.",
+      "Si acierta, gana punto.",
+      "Gana el primer equipo en llegar al objetivo."
     ]
   },
   {
@@ -409,35 +390,32 @@ const initialGames = [
         min: 3,
         max: 4,
         steps: [
-          "Con pocos jugadores, las alianzas son más frágiles y las votaciones tienen mayor impacto.",
-          "Prepará menos cartas de Consejo Tribal si el reglamento indica ajuste por cantidad de jugadores.",
-          "Conviene explicar desde el inicio cómo se define el ganador final."
+          "Con pocos jugadores, las alianzas son más frágiles.",
+          "Explicá bien cómo se define el ganador final."
         ]
       },
       {
         min: 5,
         max: 6,
         steps: [
-          "Con 5–6 jugadores, prepará la cantidad completa de personajes, votos y cartas de acción que indique tu edición.",
-          "Dejá claro cómo se resuelven empates en votaciones.",
-          "Recordá que las alianzas y traiciones son parte central del juego."
+          "Prepará personajes, votos y cartas de acción según la edición.",
+          "Dejá claro cómo se resuelven empates."
         ]
       }
     ],
     setup: [
-      "Cada jugador elige un color o personaje.",
-      "Prepará las cartas de acción.",
-      "Prepará las cartas de voto o consejo tribal.",
-      "Repartí cartas iniciales a cada jugador.",
-      "Definan cómo se resolverán las votaciones y eliminaciones."
+      "Cada jugador elige color o personaje.",
+      "Prepará cartas de acción.",
+      "Prepará cartas de voto o consejo tribal.",
+      "Repartí cartas iniciales."
     ],
     howTo: [
-      "En tu turno robás o jugás cartas según indique el reglamento.",
-      "Podés negociar, formar alianzas o protegerte.",
-      "Las cartas permiten modificar votos, afectar jugadores o ganar ventajas.",
-      "Cuando aparece un Consejo Tribal, se vota en secreto.",
-      "Los jugadores eliminados dejan la partida o pasan a cumplir rol de jurado según modalidad.",
-      "Gana quien sobrevive y logra imponerse en la fase final."
+      "En tu turno robás o jugás cartas.",
+      "Negociá, formá alianzas o protegé tu posición.",
+      "Las cartas modifican votos o dan ventajas.",
+      "En Consejo Tribal se vota en secreto.",
+      "Los eliminados dejan la partida o pasan a jurado.",
+      "Gana quien sobrevive y se impone al final."
     ]
   },
   {
@@ -459,35 +437,32 @@ const initialGames = [
         min: 1,
         max: 2,
         steps: [
-          "Con 1–2 jugadores, cada héroe tendrá más responsabilidad.",
-          "Si tu edición permite ajustar dificultad, empezá en modo fácil o normal.",
-          "Conviene elegir héroes con habilidades simples para la primera partida."
+          "Con 1–2 jugadores, cada héroe tiene más responsabilidad.",
+          "Si existe ajuste de dificultad, empezá en fácil o normal."
         ]
       },
       {
         min: 3,
         max: 6,
         steps: [
-          "Con 3–6 jugadores, dejá suficiente espacio alrededor de la diana.",
-          "Asegurate de que todos puedan tirar dados cómodamente sin golpear componentes.",
-          "Repasá antes de empezar qué tiros son válidos y cuándo el dado debe rebotar."
+          "Dejá suficiente espacio alrededor de la diana.",
+          "Repasá qué tiros son válidos y cuándo el dado debe rebotar."
         ]
       }
     ],
     setup: [
       "Montá la diana o tablero central.",
-      "Prepará los mazos de mazmorra, monstruos, equipo y jefe final.",
-      "Cada jugador elige un héroe.",
-      "Colocá marcadores de vida, monedas y recompensas al alcance.",
-      "Ajusten la dificultad si quieren una partida más relajada o desafiante."
+      "Prepará mazos de mazmorra, monstruos, equipo y jefe final.",
+      "Cada jugador elige héroe.",
+      "Colocá vida, monedas y recompensas al alcance."
     ],
     howTo: [
-      "El grupo elige por dónde avanzar en la mazmorra.",
-      "Cuando aparece un monstruo, los héroes atacan tirando dados hacia la diana.",
-      "Normalmente el dado debe rebotar antes de caer para que el tiro sea válido.",
+      "El grupo elige por dónde avanzar.",
+      "Cuando aparece un monstruo, se ataca tirando dados.",
+      "El dado normalmente debe rebotar antes de caer.",
       "La zona donde cae indica daño o efecto.",
-      "Algunas cartas obligan a tirar de formas difíciles o absurdas.",
-      "Ganan si derrotan al jefe final. Pierden si el grupo queda fuera de combate."
+      "Algunas cartas obligan a tiros raros.",
+      "Ganan si derrotan al jefe final."
     ]
   },
   {
@@ -510,35 +485,31 @@ const initialGames = [
         max: 5,
         steps: [
           "Usá roles básicos: Forense, Asesino e Investigadores.",
-          "No agregues roles especiales hasta que el grupo domine la dinámica base.",
-          "Cada jugador debe tener sus cartas visibles y ordenadas frente a sí."
+          "No agregues roles especiales hasta dominar la dinámica base."
         ]
       },
       {
         min: 6,
         max: 12,
         steps: [
-          "Podés agregar roles especiales como Cómplice y Testigo si el grupo ya conoce el juego.",
-          "Asegurate de que el Forense entienda que no puede hablar ni gesticular.",
-          "Cuantos más jugadores haya, más importante es ordenar bien las cartas visibles de cada persona."
+          "Podés sumar Cómplice y Testigo si el grupo conoce el juego.",
+          "Ordená bien las cartas visibles de cada jugador."
         ]
       }
     ],
     setup: [
-      "Asigná roles secretos: Forense, Asesino e Investigadores.",
-      "Con más jugadores podés sumar Cómplice y Testigo.",
-      "Cada jugador, excepto el Forense, recibe cartas visibles de medio de asesinato y evidencia.",
-      "El Asesino elige en secreto una carta de medio y una de evidencia.",
-      "El Forense conoce la solución y prepara las losetas de escena."
+      "Asigná roles secretos.",
+      "Cada jugador, salvo el Forense, recibe cartas visibles.",
+      "El Asesino elige medio y evidencia.",
+      "El Forense conoce la solución y prepara losetas."
     ],
     howTo: [
-      "El Forense da pistas colocando marcadores en losetas.",
-      "El Forense no puede hablar ni hacer gestos para orientar.",
-      "Los investigadores discuten qué combinación encaja mejor.",
-      "El Asesino intenta confundir sin quedar expuesto.",
-      "Cada jugador tiene una oportunidad formal de acusar.",
-      "Si alguien acierta medio y evidencia, ganan los investigadores.",
-      "Si nadie resuelve a tiempo, gana el Asesino."
+      "El Forense da pistas con marcadores.",
+      "El Forense no puede hablar ni gesticular.",
+      "Investigadores debaten la combinación correcta.",
+      "El Asesino intenta confundir.",
+      "Cada jugador tiene una acusación formal.",
+      "Si alguien acierta medio y evidencia, ganan investigadores."
     ]
   }
 ];
@@ -578,80 +549,34 @@ const emptyForm = {
 
 function D12Logo({ compact = false }) {
   return (
-    <div
-      className={`relative flex items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg transition-all ${
-        compact ? "h-10 w-10" : "h-12 w-12"
-      }`}
-    >
-      <svg
-        viewBox="0 0 120 100"
-        className={compact ? "h-8 w-9" : "h-10 w-11"}
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M38 48 C24 33 13 32 7 42 C15 42 19 47 22 52 C14 52 9 56 7 64 C18 62 27 59 38 52"
-          fill="rgba(103, 232, 249, 0.18)"
-          stroke="#67e8f9"
-          strokeWidth="4"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
+    <div className={`flex items-center justify-center rounded-2xl border border-emerald-400/35 bg-emerald-400/10 shadow-lg transition-all ${compact ? "h-10 w-10" : "h-12 w-12"}`}>
+      <svg viewBox="0 0 100 100" className={compact ? "h-7 w-7" : "h-9 w-9"} fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 6 L84 20 L96 52 L74 88 L50 96 L26 88 L4 52 L16 20 Z" stroke="#34d399" strokeWidth="6" strokeLinejoin="round" fill="rgba(52, 211, 153, 0.10)" />
+        <path d="M50 6 L50 30 M16 20 L36 42 M84 20 L64 42 M4 52 L32 58 M96 52 L68 58 M26 88 L40 66 M74 88 L60 66" stroke="#67e8f9" strokeWidth="4" strokeLinecap="round" opacity="0.75" />
+        <circle cx="50" cy="52" r="23" fill="rgba(15, 23, 42, 0.9)" stroke="#34d399" strokeWidth="4" />
+        <text x="50" y="60" textAnchor="middle" fontSize="25" fontWeight="900" fill="#a7f3d0" fontFamily="Arial, sans-serif">12</text>
+      </svg>
+    </div>
+  );
+}
 
-        <path
-          d="M82 48 C96 33 107 32 113 42 C105 42 101 47 98 52 C106 52 111 56 113 64 C102 62 93 59 82 52"
-          fill="rgba(103, 232, 249, 0.18)"
-          stroke="#67e8f9"
-          strokeWidth="4"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M60 12 L84 24 L92 50 L76 78 L60 88 L44 78 L28 50 L36 24 Z"
-          stroke="#34d399"
-          strokeWidth="5"
-          strokeLinejoin="round"
-          fill="rgba(52, 211, 153, 0.13)"
-        />
-
-        <path
-          d="M60 12 L60 31 M36 24 L49 42 M84 24 L71 42 M28 50 L47 55 M92 50 L73 55 M44 78 L53 63 M76 78 L67 63"
-          stroke="#67e8f9"
-          strokeWidth="3"
-          strokeLinecap="round"
-          opacity="0.75"
-        />
-
-        <circle
-          cx="60"
-          cy="52"
-          r="19"
-          fill="rgba(15, 23, 42, 0.92)"
-          stroke="#34d399"
-          strokeWidth="3.5"
-        />
-
-        <text
-          x="60"
-          y="59"
-          textAnchor="middle"
-          fontSize="21"
-          fontWeight="900"
-          fill="#a7f3d0"
-          fontFamily="Arial, sans-serif"
-        >
-          12
-        </text>
+function DragonCornerIcon({ compact = false }) {
+  return (
+    <div className={`flex items-center justify-center rounded-2xl border border-cyan-400/25 bg-cyan-400/10 shadow-lg transition-all ${compact ? "h-10 w-10" : "h-12 w-12"}`}>
+      <svg viewBox="0 0 120 120" className={compact ? "h-7 w-7" : "h-9 w-9"} fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M64 42 C76 20 98 17 108 30 C95 31 88 39 84 49 C96 48 105 54 110 66 C92 64 78 58 66 48" fill="rgba(103,232,249,.18)" stroke="#67e8f9" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M30 80 C40 58 52 48 69 43 C61 54 63 66 76 76 C61 77 48 74 36 88" fill="rgba(52,211,153,.16)" stroke="#34d399" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M62 39 C66 27 78 22 90 27 C84 31 82 36 85 42 C75 39 69 40 62 47" fill="rgba(52,211,153,.18)" stroke="#34d399" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M83 27 L93 16 L90 31" stroke="#a7f3d0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M36 86 C25 96 17 92 13 84 C23 87 29 82 34 74" stroke="#67e8f9" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="77" cy="34" r="2.7" fill="#a7f3d0" />
       </svg>
     </div>
   );
 }
 
 function timeText(game) {
-  return game.timeMin === game.timeMax
-    ? `${game.timeMin} min`
-    : `${game.timeMin}–${game.timeMax} min`;
+  return game.timeMin === game.timeMax ? `${game.timeMin} min` : `${game.timeMin}–${game.timeMax} min`;
 }
 
 function timeLabel(game) {
@@ -662,11 +587,7 @@ function timeLabel(game) {
 
 function getPlayerSpecificSetup(game, players) {
   if (!game.playerSetups) return [];
-
-  const match = game.playerSetups.find(
-    (rule) => players >= rule.min && players <= rule.max
-  );
-
+  const match = game.playerSetups.find((rule) => players >= rule.min && players <= rule.max);
   return match ? match.steps : [];
 }
 
@@ -674,15 +595,12 @@ function Chip({ children, variant = "default" }) {
   const styles = {
     default: "bg-slate-800 text-slate-200 border border-slate-700",
     ok: "bg-emerald-400/15 text-emerald-200 border border-emerald-400/40",
-    blue: "bg-cyan-400/15 text-cyan-100 border border-cyan-400/40",
     purple: "bg-violet-400/15 text-violet-100 border border-violet-400/40",
     danger: "bg-red-400/15 text-red-200 border border-red-400/40"
   };
 
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${styles[variant]}`}
-    >
+    <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${styles[variant]}`}>
       {children}
     </span>
   );
@@ -691,18 +609,9 @@ function Chip({ children, variant = "default" }) {
 function LabeledSelect({ label, value, onChange, options }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
-        {label}
-      </span>
-
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-12 w-full rounded-2xl border border-cyan-400/25 bg-slate-900 px-3 text-sm font-bold text-slate-100 outline-none focus:ring-2 focus:ring-emerald-300"
-      >
-        {options.map((option) => (
-          <option key={option}>{option}</option>
-        ))}
+      <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="h-12 w-full rounded-2xl border border-cyan-400/25 bg-slate-900 px-3 text-sm font-bold text-slate-100 outline-none focus:ring-2 focus:ring-emerald-300">
+        {options.map((option) => <option key={option}>{option}</option>)}
       </select>
     </label>
   );
@@ -711,17 +620,8 @@ function LabeledSelect({ label, value, onChange, options }) {
 function Field({ label, value, onChange, type = "text", placeholder = "" }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-bold text-slate-300">
-        {label}
-      </span>
-
-      <input
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-300"
-      />
+      <span className="mb-1 block text-xs font-bold text-slate-300">{label}</span>
+      <input type={type} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-300" />
     </label>
   );
 }
@@ -729,16 +629,8 @@ function Field({ label, value, onChange, type = "text", placeholder = "" }) {
 function TextAreaField({ label, value, onChange, placeholder }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-bold text-slate-300">
-        {label}
-      </span>
-
-      <textarea
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="min-h-[110px] w-full rounded-2xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-300"
-      />
+      <span className="mb-1 block text-xs font-bold text-slate-300">{label}</span>
+      <textarea value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="min-h-[110px] w-full rounded-2xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-300" />
     </label>
   );
 }
@@ -775,13 +667,9 @@ export default function App() {
   const games = useMemo(() => [...initialGames, ...customGames], [customGames]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsCompactHeader(window.scrollY > 90);
-    };
-
+    const handleScroll = () => setIsCompactHeader(window.scrollY > 90);
     window.addEventListener("scroll", handleScroll);
     handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -793,8 +681,7 @@ export default function App() {
     localStorage.setItem("mesa-juegos-custom", JSON.stringify(customGames));
   }, [customGames]);
 
-  const playable = (game) =>
-    players >= Number(game.min) && players <= Number(game.max);
+  const playable = (game) => players >= Number(game.min) && players <= Number(game.max);
 
   const visibleGames = useMemo(() => {
     return games
@@ -803,40 +690,15 @@ export default function App() {
       .filter((game) => typeFilter === "Todos" || game.type === typeFilter)
       .filter((game) => modeFilter === "Todos" || game.mode === modeFilter)
       .filter((game) => timeFilter === "Todos" || timeLabel(game) === timeFilter)
-      .filter((game) =>
-        `${game.name} ${game.type} ${game.mode}`
-          .toLowerCase()
-          .includes(query.toLowerCase())
-      )
-      .sort(
-        (a, b) =>
-          Number(playable(b)) - Number(playable(a)) ||
-          a.name.localeCompare(b.name)
-      );
-  }, [
-    games,
-    players,
-    onlyPlayable,
-    typeFilter,
-    modeFilter,
-    timeFilter,
-    query,
-    favs,
-    screen
-  ]);
+      .filter((game) => `${game.name} ${game.type} ${game.mode}`.toLowerCase().includes(query.toLowerCase()))
+      .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
+  }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, favs, screen]);
 
   const saveManualGame = () => {
     if (!form.name.trim()) return;
 
-    const setup = form.setupText
-      .split("\n")
-      .map((x) => x.trim())
-      .filter(Boolean);
-
-    const howTo = form.howToText
-      .split("\n")
-      .map((x) => x.trim())
-      .filter(Boolean);
+    const setup = form.setupText.split("\n").map((x) => x.trim()).filter(Boolean);
+    const howTo = form.howToText.split("\n").map((x) => x.trim()).filter(Boolean);
 
     const newGame = {
       id: `custom-${Date.now()}`,
@@ -851,22 +713,10 @@ export default function App() {
       age: form.age || "N/D",
       level: form.level,
       vibe: form.vibe || "Juego agregado manualmente.",
-      videoUrl:
-        form.videoUrl ||
-        `https://www.youtube.com/results?search_query=${encodeURIComponent(
-          form.name + " como jugar"
-        )}`,
-      rulesUrl:
-        form.rulesUrl ||
-        `https://www.google.com/search?q=${encodeURIComponent(
-          form.name + " reglas"
-        )}`,
-      setup: setup.length
-        ? setup
-        : ["Prepará los componentes del juego según el reglamento."],
-      howTo: howTo.length
-        ? howTo
-        : ["Jugá siguiendo la secuencia indicada por el reglamento."],
+      videoUrl: form.videoUrl || `https://www.youtube.com/results?search_query=${encodeURIComponent(form.name + " como jugar")}`,
+      rulesUrl: form.rulesUrl || `https://www.google.com/search?q=${encodeURIComponent(form.name + " reglas")}`,
+      setup: setup.length ? setup : ["Prepará los componentes del juego según el reglamento."],
+      howTo: howTo.length ? howTo : ["Jugá siguiendo la secuencia indicada por el reglamento."],
       playerSetups: []
     };
 
@@ -878,9 +728,7 @@ export default function App() {
   };
 
   const toggleFav = (id) => {
-    setFavs((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+    setFavs((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const deleteCustomGame = (id) => {
@@ -897,13 +745,7 @@ export default function App() {
       <div className="min-h-screen bg-[#031313] text-slate-100">
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
-            <button
-              onClick={() => {
-                setScreen("home");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
-            >
+            <button onClick={() => { setScreen("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
               <ArrowLeft size={16} />
               Volver
             </button>
@@ -913,29 +755,14 @@ export default function App() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <Chip variant={playable(selected) ? "ok" : "danger"}>
-                  {playable(selected)
-                    ? "Se puede jugar"
-                    : "No entra con este grupo"}
+                  {playable(selected) ? "Se puede jugar" : "No entra con este grupo"}
                 </Chip>
-
-                <h1 className="mt-4 text-3xl font-black text-white">
-                  {selected.name}
-                </h1>
-
-                <p className="mt-2 text-sm text-cyan-100">
-                  {selected.vibe}
-                </p>
+                <h1 className="mt-4 text-3xl font-black text-white">{selected.name}</h1>
+                <p className="mt-2 text-sm text-cyan-100">{selected.vibe}</p>
               </div>
 
-              <button
-                onClick={() => toggleFav(selected.id)}
-                className="rounded-2xl bg-slate-800 p-3"
-              >
-                {favs.includes(selected.id) ? (
-                  <Star className="text-emerald-300" />
-                ) : (
-                  <StarOff className="text-slate-300" />
-                )}
+              <button onClick={() => toggleFav(selected.id)} className="rounded-2xl bg-slate-800 p-3">
+                {favs.includes(selected.id) ? <Star className="text-emerald-300" /> : <StarOff className="text-slate-300" />}
               </button>
             </div>
           </div>
@@ -947,13 +774,11 @@ export default function App() {
                 <p className="text-xs text-slate-400">Jug.</p>
                 <b>{selected.min}–{selected.max}</b>
               </div>
-
               <div className="rounded-2xl border border-slate-700 bg-slate-900 p-3">
                 <Clock className="mx-auto h-4 w-4 text-cyan-300" />
                 <p className="text-xs text-slate-400">Tiempo</p>
                 <b>{timeText(selected)}</b>
               </div>
-
               <div className="rounded-2xl border border-slate-700 bg-slate-900 p-3">
                 <Trophy className="mx-auto h-4 w-4 text-violet-300" />
                 <p className="text-xs text-slate-400">Nivel</p>
@@ -962,24 +787,11 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <a
-                href={selected.videoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-3 py-3 text-sm font-black text-slate-950"
-              >
-                Video
-                <ExternalLink size={15} />
+              <a href={selected.videoUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-3 py-3 text-sm font-black text-slate-950">
+                Video <ExternalLink size={15} />
               </a>
-
-              <a
-                href={selected.rulesUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950"
-              >
-                Instructivo
-                <ExternalLink size={15} />
+              <a href={selected.rulesUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950">
+                Instructivo <ExternalLink size={15} />
               </a>
             </div>
 
@@ -989,16 +801,10 @@ export default function App() {
                   <Users className="text-emerald-300" />
                   Seteo para {players} jugadores
                 </h2>
-
                 <ol className="space-y-2">
                   {playerSpecificSetup.map((step, index) => (
-                    <li
-                      key={index}
-                      className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50"
-                    >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">
-                        {index + 1}
-                      </span>
+                    <li key={index} className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">{index + 1}</span>
                       <span>{step}</span>
                     </li>
                   ))}
@@ -1011,16 +817,10 @@ export default function App() {
                 <BookOpen className="text-cyan-300" />
                 Preparación del juego
               </h2>
-
               <ol className="space-y-2">
                 {selected.setup.map((step, index) => (
-                  <li
-                    key={index}
-                    className="flex gap-3 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 p-3 text-sm leading-5 text-cyan-50"
-                  >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-xs font-black text-slate-950">
-                      {index + 1}
-                    </span>
+                  <li key={index} className="flex gap-3 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 p-3 text-sm leading-5 text-cyan-50">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-xs font-black text-slate-950">{index + 1}</span>
                     <span>{step}</span>
                   </li>
                 ))}
@@ -1032,16 +832,10 @@ export default function App() {
                 <PlayCircle className="text-emerald-300" />
                 Cómo se juega
               </h2>
-
               <ol className="space-y-2">
                 {selected.howTo.map((step, index) => (
-                  <li
-                    key={index}
-                    className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50"
-                  >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">
-                      {index + 1}
-                    </span>
+                  <li key={index} className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">{index + 1}</span>
                     <span>{step}</span>
                   </li>
                 ))}
@@ -1049,19 +843,14 @@ export default function App() {
             </section>
 
             {selected.custom && (
-              <button
-                onClick={() => deleteCustomGame(selected.id)}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white"
-              >
+              <button onClick={() => deleteCustomGame(selected.id)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white">
                 <Trash2 size={16} />
                 Borrar juego agregado
               </button>
             )}
 
             <div className="rounded-3xl border border-amber-300/35 bg-amber-300/10 p-3 text-sm text-amber-100">
-              <b>Nota:</b> esta guía sirve para arrancar rápido. Para
-              desempates, variantes o casos especiales, revisá el reglamento de
-              tu edición.
+              <b>Nota:</b> esta guía sirve para arrancar rápido. Para desempates, variantes o casos especiales, revisá el reglamento de tu edición.
             </div>
           </div>
         </div>
@@ -1074,134 +863,40 @@ export default function App() {
       <div className="min-h-screen bg-[#031313] text-slate-100">
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
-            <button
-              onClick={() => setScreen("home")}
-              className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
-            >
+            <button onClick={() => setScreen("home")} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
               <ArrowLeft size={16} />
               Volver
             </button>
-
-            <h1 className="mt-4 text-2xl font-black text-white">
-              Agregar juego
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-300">
-              Cargá un juego manualmente. Se guarda solo en este dispositivo.
-            </p>
+            <h1 className="mt-4 text-2xl font-black text-white">Agregar juego</h1>
+            <p className="mt-1 text-sm text-slate-300">Cargá un juego manualmente. Se guarda solo en este dispositivo.</p>
           </div>
 
           <main className="space-y-3 p-4">
-            <Field
-              label="Nombre del juego"
-              value={form.name}
-              onChange={(value) => setForm({ ...form, name: value })}
-              placeholder="Ej: Codenames"
-            />
+            <Field label="Nombre del juego" value={form.name} onChange={(value) => setForm({ ...form, name: value })} placeholder="Ej: Codenames" />
 
             <div className="grid grid-cols-2 gap-2">
-              <Field
-                label="Mín. jugadores"
-                type="number"
-                value={form.min}
-                onChange={(value) => setForm({ ...form, min: value })}
-              />
-
-              <Field
-                label="Máx. jugadores"
-                type="number"
-                value={form.max}
-                onChange={(value) => setForm({ ...form, max: value })}
-              />
+              <Field label="Mín. jugadores" type="number" value={form.min} onChange={(value) => setForm({ ...form, min: value })} />
+              <Field label="Máx. jugadores" type="number" value={form.max} onChange={(value) => setForm({ ...form, max: value })} />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <Field
-                label="Tiempo mín."
-                type="number"
-                value={form.timeMin}
-                onChange={(value) => setForm({ ...form, timeMin: value })}
-              />
-
-              <Field
-                label="Tiempo máx."
-                type="number"
-                value={form.timeMax}
-                onChange={(value) => setForm({ ...form, timeMax: value })}
-              />
+              <Field label="Tiempo mín." type="number" value={form.timeMin} onChange={(value) => setForm({ ...form, timeMin: value })} />
+              <Field label="Tiempo máx." type="number" value={form.timeMax} onChange={(value) => setForm({ ...form, timeMax: value })} />
             </div>
 
-            <LabeledSelect
-              label="Tipo"
-              value={form.type}
-              onChange={(value) => setForm({ ...form, type: value })}
-              options={typeOptions.filter((x) => x !== "Todos")}
-            />
+            <LabeledSelect label="Tipo" value={form.type} onChange={(value) => setForm({ ...form, type: value })} options={typeOptions.filter((x) => x !== "Todos")} />
+            <LabeledSelect label="Modo" value={form.mode} onChange={(value) => setForm({ ...form, mode: value })} options={modeOptions.filter((x) => x !== "Todos")} />
+            <LabeledSelect label="Dificultad" value={form.level} onChange={(value) => setForm({ ...form, level: value })} options={["Bajo", "Medio", "Alto"]} />
 
-            <LabeledSelect
-              label="Modo"
-              value={form.mode}
-              onChange={(value) => setForm({ ...form, mode: value })}
-              options={modeOptions.filter((x) => x !== "Todos")}
-            />
+            <Field label="Edad sugerida" value={form.age} onChange={(value) => setForm({ ...form, age: value })} placeholder="Ej: 10+" />
+            <Field label="Resumen" value={form.vibe} onChange={(value) => setForm({ ...form, vibe: value })} placeholder="Ej: Deducción rápida por equipos" />
+            <Field label="Link a video" value={form.videoUrl} onChange={(value) => setForm({ ...form, videoUrl: value })} placeholder="Opcional" />
+            <Field label="Link a instructivo/reglas" value={form.rulesUrl} onChange={(value) => setForm({ ...form, rulesUrl: value })} placeholder="Opcional" />
 
-            <LabeledSelect
-              label="Dificultad"
-              value={form.level}
-              onChange={(value) => setForm({ ...form, level: value })}
-              options={["Bajo", "Medio", "Alto"]}
-            />
+            <TextAreaField label="Preparación" value={form.setupText} onChange={(value) => setForm({ ...form, setupText: value })} placeholder={"Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."} />
+            <TextAreaField label="Cómo se juega" value={form.howToText} onChange={(value) => setForm({ ...form, howToText: value })} placeholder={"Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."} />
 
-            <Field
-              label="Edad sugerida"
-              value={form.age}
-              onChange={(value) => setForm({ ...form, age: value })}
-              placeholder="Ej: 10+"
-            />
-
-            <Field
-              label="Resumen"
-              value={form.vibe}
-              onChange={(value) => setForm({ ...form, vibe: value })}
-              placeholder="Ej: Deducción rápida por equipos"
-            />
-
-            <Field
-              label="Link a video"
-              value={form.videoUrl}
-              onChange={(value) => setForm({ ...form, videoUrl: value })}
-              placeholder="Opcional"
-            />
-
-            <Field
-              label="Link a instructivo/reglas"
-              value={form.rulesUrl}
-              onChange={(value) => setForm({ ...form, rulesUrl: value })}
-              placeholder="Opcional"
-            />
-
-            <TextAreaField
-              label="Preparación"
-              value={form.setupText}
-              onChange={(value) => setForm({ ...form, setupText: value })}
-              placeholder={
-                "Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."
-              }
-            />
-
-            <TextAreaField
-              label="Cómo se juega"
-              value={form.howToText}
-              onChange={(value) => setForm({ ...form, howToText: value })}
-              placeholder={
-                "Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."
-              }
-            />
-
-            <button
-              onClick={saveManualGame}
-              className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950"
-            >
+            <button onClick={saveManualGame} className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950">
               <Save size={18} />
               Guardar juego
             </button>
@@ -1214,67 +909,27 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#031313] text-slate-100">
       <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-        <div
-          className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 ${
-            isCompactHeader ? "pb-3 pt-3" : "pb-4 pt-4"
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <D12Logo compact={isCompactHeader} />
-
-            <div>
-              <h1
-                className={`font-black text-white transition-all ${
-                  isCompactHeader ? "text-xl" : "text-2xl"
-                }`}
-              >
-                {APP_NAME}
-              </h1>
-
-              {!isCompactHeader && (
-                <p className="text-xs font-black uppercase tracking-wide text-emerald-300">
-                  {APP_SUBTITLE}
-                </p>
-              )}
+        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 ${isCompactHeader ? "pb-3 pt-3" : "pb-4 pt-4"}`}>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <D12Logo compact={isCompactHeader} />
+              <div>
+                <h1 className={`font-black text-white transition-all ${isCompactHeader ? "text-xl" : "text-2xl"}`}>{APP_NAME}</h1>
+                {!isCompactHeader && <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{APP_SUBTITLE}</p>}
+              </div>
             </div>
+            <DragonCornerIcon compact={isCompactHeader} />
           </div>
 
-          <div
-            className={`grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-[1fr_1.6fr] ${
-              isCompactHeader ? "mt-3" : "mt-4"
-            }`}
-          >
-            <div
-              className={`rounded-3xl border border-emerald-400/25 bg-slate-900/80 text-center transition-all ${
-                isCompactHeader ? "p-1.5" : "p-2"
-              }`}
-            >
-              {!isCompactHeader && (
-                <p className="text-[10px] font-bold uppercase text-emerald-200">
-                  Participantes
-                </p>
-              )}
-
+          <div className={`grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-[1fr_1.6fr] ${isCompactHeader ? "mt-3" : "mt-4"}`}>
+            <div className={`rounded-3xl border border-emerald-400/25 bg-slate-900/80 text-center transition-all ${isCompactHeader ? "p-1.5" : "p-2"}`}>
+              {!isCompactHeader && <p className="text-[10px] font-bold uppercase text-emerald-200">Participantes</p>}
               <div className="flex items-center justify-center gap-2">
-                <button
-                  onClick={() => setPlayers((p) => Math.max(1, p - 1))}
-                  className="rounded-full bg-slate-800 p-2 text-white"
-                >
+                <button onClick={() => setPlayers((p) => Math.max(1, p - 1))} className="rounded-full bg-slate-800 p-2 text-white">
                   <Minus size={15} />
                 </button>
-
-                <span
-                  className={`w-8 text-center font-black transition-all ${
-                    isCompactHeader ? "text-xl" : "text-2xl"
-                  }`}
-                >
-                  {players}
-                </span>
-
-                <button
-                  onClick={() => setPlayers((p) => p + 1)}
-                  className="rounded-full bg-emerald-400 p-2 text-slate-950"
-                >
+                <span className={`w-8 text-center font-black transition-all ${isCompactHeader ? "text-xl" : "text-2xl"}`}>{players}</span>
+                <button onClick={() => setPlayers((p) => p + 1)} className="rounded-full bg-emerald-400 p-2 text-slate-950">
                   <Plus size={15} />
                 </button>
               </div>
@@ -1282,95 +937,39 @@ export default function App() {
 
             <div className="relative">
               <Search className="absolute left-3 top-4 h-4 w-4 text-cyan-200" />
-
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar juego..."
-                className={`w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 outline-none transition-all focus:ring-2 focus:ring-emerald-300 ${
-                  isCompactHeader ? "h-11" : "h-full min-h-[58px]"
-                }`}
-              />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar juego..." className={`w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 outline-none transition-all focus:ring-2 focus:ring-emerald-300 ${isCompactHeader ? "h-11" : "h-full min-h-[58px]"}`} />
             </div>
           </div>
 
-          <div
-            className={`rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3 transition-all duration-300 ${
-              isCompactHeader ? "mt-3" : "mt-4"
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() => setShowFilters((value) => !value)}
-              className="flex w-full items-center justify-between"
-            >
+          <div className={`rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3 transition-all duration-300 ${isCompactHeader ? "mt-3" : "mt-4"}`}>
+            <button type="button" onClick={() => setShowFilters((value) => !value)} className="flex w-full items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
                   <SlidersHorizontal size={18} />
                 </div>
-
                 <div className="text-left">
                   <p className="text-sm font-black text-white">Filtros</p>
-
-                  {!isCompactHeader && (
-                    <p className="mt-0.5 text-xs leading-4 text-slate-400">
-                      {onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} ·{" "}
-                      {timeFilter} · {modeFilter}
-                    </p>
-                  )}
+                  {!isCompactHeader && <p className="mt-0.5 text-xs leading-4 text-slate-400">{onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} · {timeFilter} · {modeFilter}</p>}
                 </div>
               </div>
-
               <div className="rounded-full bg-slate-800 p-2 text-slate-200">
-                {showFilters ? (
-                  <ChevronUp size={17} />
-                ) : (
-                  <ChevronDown size={17} />
-                )}
+                {showFilters ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
               </div>
             </button>
 
             {showFilters && (
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <label className="block">
-                  <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
-                    Disponibilidad
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() => setOnlyPlayable((v) => !v)}
-                    className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${
-                      onlyPlayable
-                        ? "bg-emerald-400 text-slate-950"
-                        : "border border-slate-700 bg-slate-900 text-slate-100"
-                    }`}
-                  >
+                  <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">Disponibilidad</span>
+                  <button type="button" onClick={() => setOnlyPlayable((v) => !v)} className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${onlyPlayable ? "bg-emerald-400 text-slate-950" : "border border-slate-700 bg-slate-900 text-slate-100"}`}>
                     <Filter size={15} />
                     {onlyPlayable ? "Jugables" : "Todos"}
                   </button>
                 </label>
 
-                <LabeledSelect
-                  label="Tipo"
-                  value={typeFilter}
-                  onChange={setTypeFilter}
-                  options={typeOptions}
-                />
-
-                <LabeledSelect
-                  label="Duración"
-                  value={timeFilter}
-                  onChange={setTimeFilter}
-                  options={timeOptions}
-                />
-
-                <LabeledSelect
-                  label="Modo"
-                  value={modeFilter}
-                  onChange={setModeFilter}
-                  options={modeOptions}
-                />
+                <LabeledSelect label="Tipo" value={typeFilter} onChange={setTypeFilter} options={typeOptions} />
+                <LabeledSelect label="Duración" value={timeFilter} onChange={setTimeFilter} options={timeOptions} />
+                <LabeledSelect label="Modo" value={modeFilter} onChange={setModeFilter} options={modeOptions} />
               </div>
             )}
           </div>
@@ -1380,84 +979,34 @@ export default function App() {
           <div className="rounded-3xl border border-emerald-300/25 bg-gradient-to-br from-emerald-400 to-cyan-400 p-4 text-slate-950 shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold opacity-80">
-                  Disponibles ahora
-                </p>
-
-                <p className="text-4xl font-black">
-                  {visibleGames.length}/{games.length}
-                </p>
+                <p className="text-sm font-semibold opacity-80">Disponibles ahora</p>
+                <p className="text-4xl font-black">{visibleGames.length}/{games.length}</p>
               </div>
-
               <Trophy className="h-12 w-12 opacity-80" />
             </div>
-
-            <p className="mt-2 text-xs font-semibold opacity-80">
-              Filtrando para {players} participantes. Tocá un juego para ver
-              preparación y cómo jugar.
-            </p>
+            <p className="mt-2 text-xs font-semibold opacity-80">Filtrando para {players} participantes. Tocá un juego para ver preparación y cómo jugar.</p>
           </div>
 
-          {visibleGames.length === 0 && (
-            <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-300">
-              No hay juegos con esos filtros.
-            </div>
-          )}
+          {visibleGames.length === 0 && <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-300">No hay juegos con esos filtros.</div>}
 
           {visibleGames.map((game) => {
             const canPlay = playable(game);
-
             return (
-              <button
-                key={game.id}
-                onClick={() => {
-                  setSelected(game);
-                  setScreen("detail");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="w-full rounded-3xl border border-slate-700/80 bg-slate-900/90 p-4 text-left shadow-lg transition active:scale-[0.99]"
-              >
+              <button key={game.id} onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full rounded-3xl border border-slate-700/80 bg-slate-900/90 p-4 text-left shadow-lg transition active:scale-[0.99]">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-black text-white">
-                      {game.name}
-                    </h2>
-
-                    <p className="text-sm text-slate-300">
-                      {game.type} · {game.mode}
-                    </p>
+                    <h2 className="text-lg font-black text-white">{game.name}</h2>
+                    <p className="text-sm text-slate-300">{game.type} · {game.mode}</p>
                   </div>
-
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFav(game.id);
-                    }}
-                    className="rounded-full bg-slate-800 p-2"
-                  >
-                    {favs.includes(game.id) ? (
-                      <Star className="h-5 w-5 text-emerald-300" />
-                    ) : (
-                      <StarOff className="h-5 w-5 text-slate-400" />
-                    )}
+                  <span onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }} className="rounded-full bg-slate-800 p-2">
+                    {favs.includes(game.id) ? <Star className="h-5 w-5 text-emerald-300" /> : <StarOff className="h-5 w-5 text-slate-400" />}
                   </span>
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-1.5">
-                  <Chip variant={canPlay ? "ok" : "danger"}>
-                    {canPlay ? "Se puede" : "No entra"}
-                  </Chip>
-
-                  <Chip>
-                    <Users size={13} />
-                    {game.min}–{game.max}
-                  </Chip>
-
-                  <Chip>
-                    <Clock size={13} />
-                    {timeText(game)}
-                  </Chip>
-
+                  <Chip variant={canPlay ? "ok" : "danger"}>{canPlay ? "Se puede" : "No entra"}</Chip>
+                  <Chip><Users size={13} />{game.min}–{game.max}</Chip>
+                  <Chip><Clock size={13} />{timeText(game)}</Chip>
                   <Chip variant="purple">{timeLabel(game)}</Chip>
                 </div>
               </button>
@@ -1466,38 +1015,17 @@ export default function App() {
         </main>
 
         <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-md -translate-x-1/2 grid-cols-3 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">
-          <button
-            onClick={() => setScreen("home")}
-            className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
-              screen === "home"
-                ? "bg-emerald-400 text-slate-950"
-                : "text-slate-300"
-            }`}
-          >
+          <button onClick={() => { setScreen("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${screen === "home" ? "bg-emerald-400 text-slate-950" : "text-slate-300"}`}>
             <Home size={20} />
             Inicio
           </button>
 
-          <button
-            onClick={() => setScreen("favorites")}
-            className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
-              screen === "favorites"
-                ? "bg-emerald-400 text-slate-950"
-                : "text-slate-300"
-            }`}
-          >
+          <button onClick={() => { setScreen("favorites"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${screen === "favorites" ? "bg-emerald-400 text-slate-950" : "text-slate-300"}`}>
             <Heart size={20} />
             Favoritos
           </button>
 
-          <button
-            onClick={() => setScreen("add")}
-            className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${
-              screen === "add"
-                ? "bg-emerald-400 text-slate-950"
-                : "text-slate-300"
-            }`}
-          >
+          <button onClick={() => { setScreen("add"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${screen === "add" ? "bg-emerald-400 text-slate-950" : "text-slate-300"}`}>
             <PlusCircle size={20} />
             Agregar
           </button>
