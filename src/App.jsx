@@ -2,175 +2,111 @@ import React, { useState, useMemo } from "react";
 import { Star, StarOff, Plus, Minus, Search } from "lucide-react";
 
 const games = [
-  {
-    id: 1,
-    name: "Secret Hitler",
-    min: 5,
-    max: 10,
-    type: "Roles ocultos",
-    time: "45–60 min",
-    setup: ["Separar roles", "Preparar cartas"],
-    steps: ["Elegir canciller", "Votar", "Jugar política"]
-  },
-  {
-    id: 2,
-    name: "Polilla Tramposa",
-    min: 3,
-    max: 5,
-    type: "Party",
-    time: "15–25 min",
-    setup: ["Repartir cartas"],
-    steps: ["Jugar cartas", "Hacer trampa"]
-  },
-  {
-    id: 3,
-    name: "Musa",
-    min: 2,
-    max: 12,
-    type: "Creativo",
-    time: "30 min",
-    setup: ["Equipos"],
-    steps: ["Dar pista", "Adivinar"]
-  },
-  {
-    id: 4,
-    name: "Dungeon Fighter",
-    min: 1,
-    max: 6,
-    type: "Cooperativo",
-    time: "60 min",
-    setup: ["Elegir héroes"],
-    steps: ["Lanzar dados", "Combatir"]
-  },
-  {
-    id: 5,
-    name: "Deception",
-    min: 4,
-    max: 12,
-    type: "Deducción",
-    time: "20 min",
-    setup: ["Roles"],
-    steps: ["Detective da pistas"]
-  }
+  { id:1, name:"Secret Hitler", min:5, max:10, type:"Roles ocultos", time:"45–60 min" },
+  { id:2, name:"Polilla Tramposa", min:3, max:5, type:"Party", time:"15–25 min" },
+  { id:3, name:"Musa", min:2, max:12, type:"Creativo", time:"30 min" },
+  { id:4, name:"Dungeon Fighter", min:1, max:6, type:"Cooperativo", time:"60 min" },
+  { id:5, name:"Deception HK", min:4, max:12, type:"Deducción", time:"20 min" }
 ];
 
 export default function App() {
+
   const [players, setPlayers] = useState(5);
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(null);
+  const [onlyPlayable, setOnlyPlayable] = useState(true);
   const [favs, setFavs] = useState([]);
-  const [onlyPlayable, setOnlyPlayable] = useState(false);
 
-  const filteredGames = useMemo(() => {
-    return games
-      .filter(g =>
-        g.name.toLowerCase().includes(query.toLowerCase())
-      )
-      .filter(g =>
-        !onlyPlayable || (players >= g.min && players <= g.max)
-      );
+  const filtered = useMemo(() => {
+    return games.filter(g =>
+      g.name.toLowerCase().includes(query.toLowerCase()) &&
+      (!onlyPlayable || (players >= g.min && players <= g.max))
+    );
   }, [query, players, onlyPlayable]);
 
-  const toggleFav = (id) => {
+  const toggleFav = id => {
     setFavs(prev =>
       prev.includes(id)
-        ? prev.filter(x => x !== id)
+        ? prev.filter(f => f !== id)
         : [...prev, id]
     );
   };
 
   return (
-    <div className="min-h-screen bg-[#021212] text-white p-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#021212] to-[#041c1c] text-white p-4">
 
       {/* HEADER */}
-      <h1 className="text-3xl font-bold text-emerald-400 mb-4">
+      <h1 className="text-4xl font-black text-emerald-400 mb-4">
         🎲 Mesa lista
       </h1>
 
       {/* CONTROLES */}
-      <div className="space-y-3 mb-5">
+      <div className="bg-slate-900 p-3 rounded-xl mb-4 space-y-3 shadow-lg">
 
         {/* jugadores */}
-        <div className="flex items-center gap-3">
-          <button onClick={() => setPlayers(players - 1)}>
-            <Minus />
+        <div className="flex items-center justify-between">
+          <button onClick={()=>setPlayers(players-1)} className="bg-slate-700 p-2 rounded-full">
+            <Minus size={18}/>
           </button>
 
-          <span className="text-xl">{players}</span>
+          <span className="text-2xl font-bold">{players}</span>
 
-          <button onClick={() => setPlayers(players + 1)}>
-            <Plus />
+          <button onClick={()=>setPlayers(players+1)} className="bg-emerald-400 text-black p-2 rounded-full">
+            <Plus size={18}/>
           </button>
         </div>
 
-        {/* búsqueda */}
-        <div className="flex items-center gap-2">
-          <Search size={16} />
+        {/* buscador */}
+        <div className="flex gap-2 items-center">
+          <Search size={18}/>
           <input
             placeholder="Buscar juego..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="bg-slate-800 p-2 rounded w-full"
+            onChange={e=>setQuery(e.target.value)}
+            className="w-full bg-slate-800 p-2 rounded-lg focus:outline-none"
           />
         </div>
 
         {/* filtro */}
         <button
-          onClick={() => setOnlyPlayable(!onlyPlayable)}
-          className="bg-slate-800 px-3 py-1 rounded"
+          onClick={()=>setOnlyPlayable(!onlyPlayable)}
+          className="w-full bg-emerald-400 text-black font-bold py-2 rounded-lg"
         >
-          {onlyPlayable ? "Mostrar todos" : "Solo jugables"}
+          {onlyPlayable ? "Mostrando jugables" : "Mostrar todos"}
         </button>
       </div>
 
       {/* LISTA */}
       <div className="space-y-3">
-        {filteredGames.map(g => {
-          const canPlay =
-            players >= g.min && players <= g.max;
+        {filtered.map(g => {
+
+          const playable = players >= g.min && players <= g.max;
 
           return (
             <div
               key={g.id}
-              className="bg-slate-900 p-4 rounded-xl border border-slate-700"
+              className="bg-slate-900 p-4 rounded-xl shadow-lg flex justify-between items-center"
             >
-              <div className="flex justify-between">
-                <div onClick={() => setSelected(g)}>
-                  <h2 className="font-bold">{g.name}</h2>
-                  <p className="text-sm text-slate-400">
-                    {g.type} • {g.time}
-                  </p>
-                </div>
+              <div>
+                <h2 className="font-bold text-lg">{g.name}</h2>
+                <p className="text-sm text-slate-400">
+                  {g.type} • {g.time}
+                </p>
 
-                <button onClick={() => toggleFav(g.id)}>
-                  {favs.includes(g.id)
-                    ? <Star className="text-emerald-400" />
-                    : <StarOff />}
-                </button>
+                <p className={playable ? "text-emerald-400" : "text-red-400"}>
+                  {g.min}-{g.max} jugadores
+                </p>
               </div>
 
-              <p className={canPlay ? "text-green-400" : "text-red-400"}>
-                {g.min}-{g.max} jugadores → {canPlay ? "OK" : "No"}
-              </p>
+              <button onClick={()=>toggleFav(g.id)}>
+                {favs.includes(g.id)
+                  ? <Star className="text-emerald-400"/>
+                  : <StarOff className="text-slate-500"/>
+                }
+              </button>
             </div>
           );
         })}
       </div>
-
-      {/* DETALLE */}
-      {selected && (
-        <div className="mt-6 bg-slate-800 p-4 rounded-xl">
-          <h2 className="text-xl font-bold">
-            {selected.name}
-          </h2>
-
-          <h3 className="mt-2">Preparación</h3>
-          {selected.setup.map((s, i) => <p key={i}>• {s}</p>)}
-
-          <h3 className="mt-2">Cómo jugar</h3>
-          {selected.steps.map((s, i) => <p key={i}>• {s}</p>)}
-        </div>
-      )}
 
     </div>
   );
