@@ -326,7 +326,19 @@ const initialGames = [
   }
 ];
 
-const typeOptions = ["Todos", "Roles ocultos", "Party", "Visual", "Cooperativo", "Social", "Creativo", "Estrategia", "Destreza", "Deducción"];
+const typeOptions = [
+  "Todos",
+  "Roles ocultos",
+  "Party",
+  "Visual",
+  "Cooperativo",
+  "Social",
+  "Creativo",
+  "Estrategia",
+  "Destreza",
+  "Deducción"
+];
+
 const modeOptions = ["Todos", "Competitivo", "Cooperativo", "Equipos"];
 const timeOptions = ["Todos", "Rápido", "Medio", "Largo"];
 
@@ -381,10 +393,11 @@ function LabeledSelect({ label, value, onChange, options }) {
       <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
         {label}
       </span>
+
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 w-full rounded-2xl border border-cyan-400/25 bg-slate-900 px-3 text-xs font-bold text-slate-100 outline-none focus:ring-2 focus:ring-emerald-300"
+        className="h-12 w-full rounded-2xl border border-cyan-400/25 bg-slate-900 px-3 text-sm font-bold text-slate-100 outline-none focus:ring-2 focus:ring-emerald-300"
       >
         {options.map((option) => (
           <option key={option}>{option}</option>
@@ -400,6 +413,7 @@ function Field({ label, value, onChange, type = "text", placeholder = "" }) {
       <span className="mb-1 block text-xs font-bold text-slate-300">
         {label}
       </span>
+
       <input
         type={type}
         value={value}
@@ -417,6 +431,7 @@ function TextAreaField({ label, value, onChange, placeholder }) {
       <span className="mb-1 block text-xs font-bold text-slate-300">
         {label}
       </span>
+
       <textarea
         value={value}
         placeholder={placeholder}
@@ -481,14 +496,6 @@ export default function App() {
       .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
   }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, favs, screen]);
 
-  const playableCount = games.filter(playable).length;
-
-  const toggleFav = (id) => {
-    setFavs((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
-
   const saveManualGame = () => {
     if (!form.name.trim()) return;
 
@@ -515,8 +522,12 @@ export default function App() {
       age: form.age || "N/D",
       level: form.level,
       vibe: form.vibe || "Juego agregado manualmente.",
-      videoUrl: form.videoUrl || `https://www.youtube.com/results?search_query=${encodeURIComponent(form.name + " como jugar")}`,
-      rulesUrl: form.rulesUrl || `https://www.google.com/search?q=${encodeURIComponent(form.name + " reglas")}`,
+      videoUrl:
+        form.videoUrl ||
+        `https://www.youtube.com/results?search_query=${encodeURIComponent(form.name + " como jugar")}`,
+      rulesUrl:
+        form.rulesUrl ||
+        `https://www.google.com/search?q=${encodeURIComponent(form.name + " reglas")}`,
       setup: setup.length ? setup : ["Prepará los componentes del juego según el reglamento."],
       howTo: howTo.length ? howTo : ["Jugá siguiendo la secuencia indicada por el reglamento."]
     };
@@ -525,6 +536,12 @@ export default function App() {
     setSelected(newGame);
     setForm(emptyForm);
     setScreen("detail");
+  };
+
+  const toggleFav = (id) => {
+    setFavs((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   };
 
   const deleteCustomGame = (id) => {
@@ -844,7 +861,7 @@ export default function App() {
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-[1fr_1.6fr] gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1.6fr]">
             <div className="rounded-3xl border border-emerald-400/25 bg-slate-900/80 p-2 text-center">
               <p className="text-[10px] font-bold uppercase text-emerald-200">
                 Participantes
@@ -883,39 +900,51 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setOnlyPlayable((v) => !v)}
-              className={`flex h-10 items-center justify-center gap-1 rounded-2xl text-xs font-black ${
-                onlyPlayable
-                  ? "bg-emerald-400 text-slate-950"
-                  : "bg-slate-800 text-slate-100"
-              }`}
-            >
-              <Filter size={14} />
-              {onlyPlayable ? "Jugables" : "Todos"}
-            </button>
+          <div className="mt-4 rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-wide text-emerald-300">
+              Filtros
+            </p>
 
-            <LabeledSelect
-              label="Tipo"
-              value={typeFilter}
-              onChange={setTypeFilter}
-              options={typeOptions}
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
+                  Disponibilidad
+                </span>
 
-            <LabeledSelect
-              label="Duración"
-              value={timeFilter}
-              onChange={setTimeFilter}
-              options={timeOptions}
-            />
+                <button
+                  onClick={() => setOnlyPlayable((v) => !v)}
+                  className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${
+                    onlyPlayable
+                      ? "bg-emerald-400 text-slate-950"
+                      : "border border-slate-700 bg-slate-900 text-slate-100"
+                  }`}
+                >
+                  <Filter size={15} />
+                  {onlyPlayable ? "Jugables" : "Todos"}
+                </button>
+              </label>
 
-            <LabeledSelect
-              label="Modo"
-              value={modeFilter}
-              onChange={setModeFilter}
-              options={modeOptions}
-            />
+              <LabeledSelect
+                label="Tipo"
+                value={typeFilter}
+                onChange={setTypeFilter}
+                options={typeOptions}
+              />
+
+              <LabeledSelect
+                label="Duración"
+                value={timeFilter}
+                onChange={setTimeFilter}
+                options={timeOptions}
+              />
+
+              <LabeledSelect
+                label="Modo"
+                value={modeFilter}
+                onChange={setModeFilter}
+                options={modeOptions}
+              />
+            </div>
           </div>
         </div>
 
