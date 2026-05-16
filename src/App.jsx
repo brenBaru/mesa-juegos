@@ -857,7 +857,87 @@ export default function App() {
       </div>
     );
   }
+  if (screen === "import") {
+  return (
+    <div className="min-h-screen bg-[#031313] text-slate-100">
+      <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
 
+        <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
+          <button
+            onClick={() => setScreen("add")}
+            className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
+          >
+            <ArrowLeft size={16} />
+            Volver
+          </button>
+
+          <h1 className="mt-4 text-2xl font-black text-white">
+            Importar juego
+          </h1>
+
+          <p className="mt-1 text-sm text-slate-300">
+            Buscá un juego para agregarlo automáticamente
+          </p>
+        </div>
+
+        <div className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-4 h-4 w-4 text-cyan-200" />
+
+            <input
+              placeholder="Buscar juego..."
+              className="w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 h-12 text-sm text-white outline-none focus:ring-2 focus:ring-emerald-300"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3 px-4">
+          {["Catan", "Dixit", "Codenames", "Carcassonne"].map((name, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-slate-700 bg-slate-900 p-3 flex justify-between items-center"
+            >
+              <span className="font-bold">{name}</span>
+
+              <button
+                onClick={() => {
+                  const newGame = {
+                    id: `import-${Date.now()}`,
+                    name: name,
+                    min: 2,
+                    max: 6,
+                    type: "Party",
+                    mode: "Competitivo",
+                    timeMin: 20,
+                    timeMax: 40,
+                    age: "N/D",
+                    level: "Medio",
+                    vibe: "Juego importado desde catálogo.",
+
+                    videoUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(name + " juego de mesa como jugar")}`,
+                    rulesUrl: `https://www.google.com/search?q=${encodeURIComponent(name + " juego de mesa reglas")}`,
+
+                    setup: ["Preparación no disponible."],
+                    howTo: ["Reglas no disponibles."]
+                  };
+
+                  setCustomGames((prev) => [newGame, ...prev]);
+                  setSelected(newGame);
+                  setScreen("detail");
+
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className="bg-emerald-400 text-slate-950 px-3 py-1 rounded-xl text-xs font-black">
+                Importar
+              </button>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+}
   if (screen === "add") {
     return (
       <div className="min-h-screen bg-[#031313] text-slate-100">
@@ -872,6 +952,11 @@ export default function App() {
           </div>
 
           <main className="space-y-3 p-4">
+            <button
+              onClick={() => setScreen("import")}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950">
+              Importar desde catálogo
+            </button>
             <Field label="Nombre del juego" value={form.name} onChange={(value) => setForm({ ...form, name: value })} placeholder="Ej: Codenames" />
 
             <div className="grid grid-cols-2 gap-2">
