@@ -18,7 +18,10 @@ import {
   ExternalLink,
   Save,
   Trash2,
-  PlusCircle
+  PlusCircle,
+  ChevronDown,
+  ChevronUp,
+  SlidersHorizontal
 } from "lucide-react";
 
 const initialGames = [
@@ -450,6 +453,7 @@ export default function App() {
   const [typeFilter, setTypeFilter] = useState("Todos");
   const [modeFilter, setModeFilter] = useState("Todos");
   const [timeFilter, setTimeFilter] = useState("Todos");
+  const [showFilters, setShowFilters] = useState(false);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(emptyForm);
 
@@ -901,50 +905,75 @@ export default function App() {
           </div>
 
           <div className="mt-4 rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3">
-            <p className="mb-3 text-[10px] font-black uppercase tracking-wide text-emerald-300">
-              Filtros
-            </p>
+            <button
+              type="button"
+              onClick={() => setShowFilters((value) => !value)}
+              className="flex w-full items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
+                  <SlidersHorizontal size={18} />
+                </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
-                  Disponibilidad
-                </span>
+                <div className="text-left">
+                  <p className="text-sm font-black text-white">
+                    Filtros
+                  </p>
 
-                <button
-                  onClick={() => setOnlyPlayable((v) => !v)}
-                  className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${
-                    onlyPlayable
-                      ? "bg-emerald-400 text-slate-950"
-                      : "border border-slate-700 bg-slate-900 text-slate-100"
-                  }`}
-                >
-                  <Filter size={15} />
-                  {onlyPlayable ? "Jugables" : "Todos"}
-                </button>
-              </label>
+                  <p className="mt-0.5 text-xs leading-4 text-slate-400">
+                    {onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} · {timeFilter} · {modeFilter}
+                  </p>
+                </div>
+              </div>
 
-              <LabeledSelect
-                label="Tipo"
-                value={typeFilter}
-                onChange={setTypeFilter}
-                options={typeOptions}
-              />
+              <div className="rounded-full bg-slate-800 p-2 text-slate-200">
+                {showFilters ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+              </div>
+            </button>
 
-              <LabeledSelect
-                label="Duración"
-                value={timeFilter}
-                onChange={setTimeFilter}
-                options={timeOptions}
-              />
+            {showFilters && (
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">
+                    Disponibilidad
+                  </span>
 
-              <LabeledSelect
-                label="Modo"
-                value={modeFilter}
-                onChange={setModeFilter}
-                options={modeOptions}
-              />
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => setOnlyPlayable((v) => !v)}
+                    className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${
+                      onlyPlayable
+                        ? "bg-emerald-400 text-slate-950"
+                        : "border border-slate-700 bg-slate-900 text-slate-100"
+                    }`}
+                  >
+                    <Filter size={15} />
+                    {onlyPlayable ? "Jugables" : "Todos"}
+                  </button>
+                </label>
+
+                <LabeledSelect
+                  label="Tipo"
+                  value={typeFilter}
+                  onChange={setTypeFilter}
+                  options={typeOptions}
+                />
+
+                <LabeledSelect
+                  label="Duración"
+                  value={timeFilter}
+                  onChange={setTimeFilter}
+                  options={timeOptions}
+                />
+
+                <LabeledSelect
+                  label="Modo"
+                  value={modeFilter}
+                  onChange={setModeFilter}
+                  options={modeOptions}
+                />
+              </div>
+            )}
           </div>
         </div>
 
