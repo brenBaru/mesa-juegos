@@ -980,15 +980,13 @@ export default function App() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold opacity-80">Disponibles ahora</p>
-                <p className="text-4xl font-black">{visibleGames.length}/{games.length}</p>
+                <p className="text-4xl font-black">{visibleGames.length}/{screen === "favorites" ? favs.length : games.length}</p>
               </div>
               <Trophy className="h-12 w-12 opacity-80" />
-            </div>
-            <p className="mt-2 text-xs font-semibold opacity-80">Filtrando para {players} participantes. Tocá un juego para ver preparación y cómo jugar.</p>
+            </div>            
+            <p className="mt-2 text-xs font-semibold opacity-80">{screen === "favorites"? `Mostrando favoritos para ${players} jugadores`: `Filtrando para ${players} participantes. Tocá un juego para ver preparación y cómo jugar.`}</p>
           </div>
-
           {visibleGames.length === 0 && <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-300">No hay juegos con esos filtros.</div>}
-
           {visibleGames.map((game) => {
             const canPlay = playable(game);
             return (
