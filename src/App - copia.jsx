@@ -895,27 +895,157 @@ const [catalogLoading, setCatalogLoading] = useState(true);
     setScreen("home");
   };
 
-  const searchGames = (query) => {
-    if (!query.trim() || query.length < 3) {
-      setImportResults([]);
-      return;
-    }
+const searchGames = (query) => {
+  if (!query.trim() || query.length < 3) {
+    setImportResults([]);
+    return;
+  }
 
-    setImportLoading(true);
+  setImportLoading(true);
 
-    const normalizedQuery = query.toLowerCase();
+  const normalizedQuery = query.toLowerCase();
 
-    const results = catalog
-      .filter((game) =>
-        `${game.name} ${game.type} ${game.mode} ${game.vibe}`
-          .toLowerCase()
-          .includes(normalizedQuery)
-      )
-      .slice(0, 12);
+  const results = catalog
+    .filter((game) =>
+      `${game.name} ${game.type} ${game.mode} ${game.vibe}`
+        .toLowerCase()
+        .includes(normalizedQuery)
+    )
+    .slice(0, 12);
+
+  setImportResults(results);
+  setImportLoading(false);
+};
+
+  setImportLoading(true);
+
+  try {
+    const res = await fetch(
+      `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(
+        query
+      )}&type=boardgame`
+    );
+
+    const xmlText = await res.text();
+    const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+
+    const results = Array.from(xml.querySelectorAll("item"))
+      .map((item) => {
+        const nameNode = item.querySelector("name");
+        const yearNode = item.querySelector("yearpublished");
+
+        return {
+          id: item.getAttribute("id"),
+          name: nameNode?.getAttribute("value") || "Sin nombre",
+          year: yearNode?.getAttribute("value") || "S/A"
+        };
+      })
+      .filter((game) => game.id && game.name)
+      .slice(0, 8);
 
     setImportResults(results);
-    setImportLoading(false);
-  };
+  } catch (e) {
+    console.error("Error buscando juegos", e);
+    setImportResults([]);
+  }
+
+  setImportLoading(false);
+};
+
+const importBggGame = async (game) => {
+  setImportLoading(true);
+
+  try {
+    const res = await fetch(
+      `https://boardgamegeek.com/xmlapi2/thing?id=${game.id}&stats=1`
+    );
+
+    const xmlText = await res.text();
+    const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+    const item = xml.querySelector("item");
+
+    if (!item) {
+      throw new Error("No se encontró el detalle del juego");
+    }
+
+    const primaryName =
+      item.querySelector('name[type="primary"]')?.getAttribute("value") ||
+      game.name;
+
+    const minPlayers = Number(
+      item.querySelector("minplayers")?.getAttribute("value") || 2
+    );
+
+    const maxPlayers = Number(
+      item.querySelector("maxplayers")?.getAttribute("value") || 6
+    );
+
+    const playingTime = Number(
+      item.querySelector("playingtime")?.getAttribute("value") || 40
+    );
+
+    const minPlayTime = Number(
+      item.querySelector("minplaytime")?.getAttribute("value") || playingTime
+    );
+
+    const maxPlayTime = Number(
+      item.querySelector("maxplaytime")?.getAttribute("value") || playingTime
+    );
+
+    const age =
+      item.querySelector("minage")?.getAttribute("value")
+        ? `${item.querySelector("minage")?.getAttribute("value")}+`
+        : "N/D";
+
+    const newGame = {
+      id: `bgg-${game.id}`,
+      bggId: game.id,
+      custom: true,
+
+      name: primaryName,
+      min: minPlayers,
+      max: maxPlayers,
+
+      type: "BGG",
+      mode: "Competitivo",
+
+      timeMin: minPlayTime,
+      timeMax: maxPlayTime,
+
+      age,
+      level: "Medio",
+
+      vibe: "Importado desde BoardGameGeek.",
+
+      videoUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(
+        primaryName + " juego de mesa como jugar"
+      )}`,
+      rulesUrl: `https://www.google.com/search?q=${encodeURIComponent(
+        primaryName + " reglas juego de mesa"
+      )}`,
+
+      setup: ["Preparación no disponible."],
+      howTo: ["Reglas no disponibles."],
+      playerSetups: []
+    };
+
+    setCustomGames((prev) => {
+      if (prev.some((existing) => existing.id === newGame.id)) {
+        return prev;
+      }
+
+      return [newGame, ...prev];
+    });
+
+    setSelected(newGame);
+    setScreen("detail");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (e) {
+    console.error("Error importando juego", e);
+  }
+
+  setImportLoading(false);
+};
 
   if (screen === "detail" && selected) {
     const playerSpecificSetup = getPlayerSpecificSetup(selected, players);
@@ -1037,139 +1167,142 @@ const [catalogLoading, setCatalogLoading] = useState(true);
     );
   }
   
-  if (screen === "import") {
-    return (
-      <div className="min-h-screen bg-[#031313] text-slate-100">
-        <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
-          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
-            <button
-              onClick={() => setScreen("add")}
-              className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
-            >
-              <ArrowLeft size={16} />
-              Volver
-            </button>
+if (screen === "import") {
+  return (
+    <div className="min-h-screen bg-[#031313] text-slate-100">
+      <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
+        <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
+          <button
+            onClick={() => setScreen("add")}
+            className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300"
+          >
+            <ArrowLeft size={16} />
+            Volver
+          </button>
 
-            <h1 className="mt-4 text-2xl font-black text-white">
-              Importar juego
-            </h1>
+          <h1 className="mt-4 text-2xl font-black text-white">
+            Importar juego
+          </h1>
 
-            <p className="mt-1 text-sm text-slate-300">
-              Buscá un juego del catálogo local para agregarlo automáticamente
+          <p className="mt-1 text-sm text-slate-300">
+            Buscá un juego del catálogo local para agregarlo automáticamente
+          </p>
+        </div>
+
+        <div className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-4 h-4 w-4 text-cyan-200" />
+
+            <input
+              value={importQuery}
+              onChange={(e) => {
+                const value = e.target.value;
+                setImportQuery(value);
+                searchGames(value);
+              }}
+              placeholder="Buscar juego..."
+              className="h-12 w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white outline-none focus:ring-2 focus:ring-emerald-300"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3 px-4">
+          {catalogLoading && (
+            <p className="text-sm text-slate-400">
+              Cargando catálogo...
             </p>
-          </div>
+          )}
 
-          <div className="p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-4 h-4 w-4 text-cyan-200" />
+          {!catalogLoading && importQuery.length < 3 && (
+            <p className="text-sm text-slate-400">
+              Escribí al menos 3 letras para buscar.
+            </p>
+          )}
 
-              <input
-                value={importQuery}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setImportQuery(value);
-                  searchGames(value);
-                }}
-                placeholder="Buscar juego..."
-                className="h-12 w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white outline-none focus:ring-2 focus:ring-emerald-300"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3 px-4">
-            {catalogLoading && (
-              <p className="text-sm text-slate-400">Cargando catálogo...</p>
-            )}
-
-            {!catalogLoading && importQuery.length < 3 && (
+          {!catalogLoading &&
+            !importLoading &&
+            importQuery.length >= 3 &&
+            importResults.length === 0 && (
               <p className="text-sm text-slate-400">
-                Escribí al menos 3 letras para buscar.
+                No se encontraron resultados.
               </p>
             )}
 
-            {!catalogLoading &&
-              !importLoading &&
-              importQuery.length >= 3 &&
-              importResults.length === 0 && (
-                <p className="text-sm text-slate-400">
-                  No se encontraron resultados.
-                </p>
-              )}
+          {importLoading && (
+            <p className="text-sm text-slate-400">
+              Buscando...
+            </p>
+          )}
 
-            {importLoading && (
-              <p className="text-sm text-slate-400">Buscando...</p>
-            )}
+          {Array.isArray(importResults) &&
+            importResults.map((game) => {
+              const alreadyExists = games.some(
+                (existing) =>
+                  existing.name.toLowerCase() === game.name.toLowerCase()
+              );
 
-            {Array.isArray(importResults) &&
-              importResults.map((game) => {
-                const alreadyExists = games.some(
-                  (existing) =>
-                    existing.name.toLowerCase() === game.name.toLowerCase()
-                );
+              return (
+                <div
+                  key={game.id}
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900 p-3"
+                >
+                  <div>
+                    <p className="font-bold text-white">
+                      {game.name}
+                    </p>
 
-                return (
-                  <div
-                    key={game.id}
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900 p-3"
-                  >
-                    <div>
-                      <p className="font-bold text-white">{game.name}</p>
+                    <p className="text-xs text-slate-400">
+                      {game.min}–{game.max} jug · {timeText(game)} · {game.type}
+                    </p>
+                  </div>
 
-                      <p className="text-xs text-slate-400">
-                        {game.min}–{game.max} jug · {timeText(game)} · {game.type}
-                      </p>
-                    </div>
+                  <button
+                    onClick={() => {
+                      if (alreadyExists) {
+                        const existingGame = games.find(
+                          (existing) =>
+                            existing.name.toLowerCase() ===
+                            game.name.toLowerCase()
+                        );
 
-                    <button
-                      onClick={() => {
-                        if (alreadyExists) {
-                          const existingGame = games.find(
-                            (existing) =>
-                              existing.name.toLowerCase() ===
-                              game.name.toLowerCase()
-                          );
-
-                          setSelected(existingGame);
-                          setScreen("detail");
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                          return;
-                        }
-
-                        const newGame = {
-                          ...game,
-                          custom: true,
-                          videoUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                            game.name + " juego de mesa como jugar"
-                          )}`,
-                          rulesUrl: `https://www.google.com/search?q=${encodeURIComponent(
-                            game.name + " reglas juego de mesa"
-                          )}`,
-                          setup: ["Preparación no disponible."],
-                          howTo: ["Reglas no disponibles."],
-                          playerSetups: []
-                        };
-
-                        setCustomGames((prev) => [newGame, ...prev]);
-                        setSelected(newGame);
+                        setSelected(existingGame);
                         setScreen("detail");
                         window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className={`shrink-0 rounded-xl px-3 py-1 text-xs font-black ${
-                        alreadyExists
-                          ? "bg-slate-700 text-slate-200"
-                          : "bg-emerald-400 text-slate-950"
-                      }`}
-                    >
-                      {alreadyExists ? "Ver" : "Importar"}
-                    </button>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      </div>
-    );
-  }
+                        return;
+                      }
+
+                      const newGame = {
+                        ...game,
+                        custom: true,
+
+                        videoUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                          game.name + " juego de mesa como jugar"
+                        )}`,
+                        rulesUrl: `https://www.google.com/search?q=${encodeURIComponent(
+                          game.name + " reglas juego de mesa"
+                        )}`,
+
+                        setup: ["Preparación no disponible."],
+                        howTo: ["Reglas no disponibles."],
+                        playerSetups: []
+                      };
+
+                      setCustomGames((prev) => [newGame, ...prev]);
+                      setSelected(newGame);
+                      setScreen("detail");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className={`shrink-0 rounded-xl px-3 py-1 text-xs font-black ${
+                      alreadyExists
+                        ? "bg-slate-700 text-slate-200"
+                        : "bg-emerald-400 text-slate-950"
+                    }`}
+                  >
+                    {alreadyExists ? "Ver" : "Importar"}
+                  </button>
+                </div>
+              );
+            })}
 
   if (screen === "add") {
     return (
