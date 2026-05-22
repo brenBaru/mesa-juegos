@@ -1019,6 +1019,38 @@ export default function App() {
       .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
   }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, effectiveFavs, screen]);
 
+  const setupPlaceholder = [
+    "Un paso por línea.",
+    "Ej: Separar cartas.",
+    "Repartir roles.",
+    "Preparar tablero."
+  ].join("\n");
+
+  const howToPlaceholder = [
+    "Un paso por línea.",
+    "Ej: En tu turno robás una carta.",
+    "Luego jugás una acción.",
+    "Gana quien llegue al objetivo."
+  ].join("\n");
+
+  const resetFilters = () => {
+    setQuery("");
+    setOnlyPlayable(true);
+    setTypeFilter("Todos");
+    setModeFilter("Todos");
+    setTimeFilter("Todos");
+  };
+
+  const activeFilterChips = useMemo(() => {
+    const chips = [];
+    chips.push(onlyPlayable ? `Jugables para ${players}` : "Todos los juegos");
+    if (typeFilter !== "Todos") chips.push(typeFilter);
+    if (timeFilter !== "Todos") chips.push(timeFilter);
+    if (modeFilter !== "Todos") chips.push(modeFilter);
+    if (query.trim()) chips.push(`Búsqueda: ${query.trim()}`);
+    return chips;
+  }, [onlyPlayable, players, typeFilter, timeFilter, modeFilter, query]);
+
   const saveManualGame = async () => {
     if (!form.name.trim()) return;
 
@@ -1450,7 +1482,8 @@ export default function App() {
             <aside className="space-y-4">
               <button
                 onClick={() => setScreen("import")}
-                className="flex w-full items-center justify-center gap-2 rounded-3xl bg-cyan-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/25">
+                className="flex w-full items-center justify-center gap-2 rounded-3xl bg-cyan-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/25"
+              >
                 Importar desde catálogo
               </button>
 
@@ -1491,8 +1524,8 @@ export default function App() {
               </div>
 
               <div className="grid gap-3 lg:grid-cols-2">
-                <TextAreaField label="Preparación" value={form.setupText} onChange={(value) => setForm({ ...form, setupText: value })} placeholder={"Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."} />
-                <TextAreaField label="Cómo se juega" value={form.howToText} onChange={(value) => setForm({ ...form, howToText: value })} placeholder={"Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."} />
+                <TextAreaField label="Preparación" value={form.setupText} onChange={(value) => setForm({ ...form, setupText: value })} placeholder={setupPlaceholder} />
+                <TextAreaField label="Cómo se juega" value={form.howToText} onChange={(value) => setForm({ ...form, howToText: value })} placeholder={howToPlaceholder} />
               </div>
 
               <button onClick={saveManualGame} className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-emerald-950/25">
@@ -1578,7 +1611,15 @@ export default function App() {
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-black text-white">Filtros</p>
-                  {!isCompactHeader && <p className="mt-0.5 text-xs leading-4 text-slate-400">{onlyPlayable ? "Jugables" : "Todos"} · {typeFilter} · {timeFilter} · {modeFilter}</p>}
+                  {!isCompactHeader && (
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      {activeFilterChips.map((chip) => (
+                        <span key={chip} className="rounded-full border border-cyan-400/20 bg-slate-900/80 px-2 py-0.5 text-[10px] font-black text-cyan-100">
+                          {chip}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="rounded-full bg-slate-800 p-2 text-slate-200">
@@ -1599,6 +1640,13 @@ export default function App() {
                 <LabeledSelect label="Tipo" value={typeFilter} onChange={setTypeFilter} options={typeOptions} />
                 <LabeledSelect label="Duración" value={timeFilter} onChange={setTimeFilter} options={timeOptions} />
                 <LabeledSelect label="Modo" value={modeFilter} onChange={setModeFilter} options={modeOptions} />
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="col-span-2 flex h-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-sm font-black text-slate-200 transition hover:border-emerald-400/40 hover:text-emerald-200"
+                >
+                  Limpiar filtros
+                </button>
               </div>
             )}
           </div>
@@ -1609,7 +1657,8 @@ export default function App() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold opacity-80">Disponibles ahora</p>
-                <p className="text-4xl font-black">{visibleGames.length}/{screen === "favorites" ? effectiveFavs.length : games.length}</p>
+                <p className="text-4xl font-black">{visibleGames.length} juegos</p>
+                <p className="mt-1 text-xs font-black opacity-70">de {screen === "favorites" ? effectiveFavs.length : games.length} en tu lista</p>
               </div>
               <Trophy className="h-12 w-12 opacity-80" />
             </div>            
@@ -1632,24 +1681,56 @@ export default function App() {
             </div>
           )}
 
-          {visibleGames.length === 0 && <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-300">No hay juegos con esos filtros.</div>}
+          {visibleGames.length === 0 && (
+            <div className="rounded-[2rem] border border-slate-700 bg-slate-950/70 p-6 text-center shadow-xl shadow-slate-950/30">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-200">
+                <Search size={24} />
+              </div>
+              <h2 className="mt-4 text-xl font-black text-white">
+                {screen === "favorites" ? "Todavía no hay favoritos para mostrar" : "No encontramos juegos con esos filtros"}
+              </h2>
+              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-400">
+                {screen === "favorites"
+                  ? "Marcá juegos con la estrella para armar una lista rápida de próximas partidas."
+                  : "Probá cambiar la cantidad de participantes, ajustar duración/tipo o limpiar los filtros activos."}
+              </p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-4 rounded-2xl bg-emerald-400 px-4 py-3 text-sm font-black text-slate-950"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          )}
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {visibleGames.map((game) => {
               const canPlay = playable(game);
             return (
-              <button key={game.id} onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full rounded-3xl border border-slate-700/80 bg-slate-900/90 p-4 text-left shadow-lg transition active:scale-[0.99]">
+              <button
+                key={game.id}
+                onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                className={`group min-h-[188px] w-full rounded-[2rem] border p-4 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-2xl active:scale-[0.99] ${
+                  canPlay
+                    ? "border-slate-700/80 bg-slate-900/90 hover:border-emerald-400/40 hover:shadow-emerald-950/20"
+                    : "border-red-400/20 bg-slate-950/80 opacity-80 hover:border-red-300/30"
+                }`}
+              >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h2 translate="no" className="notranslate text-lg font-black text-white">{game.name}</h2>
-                    <p className="text-sm text-slate-300">{game.type} · {game.mode}</p>
+                  <div className="min-w-0">
+                    <h2 translate="no" className="notranslate text-lg font-black leading-6 text-white transition group-hover:text-emerald-100">{game.name}</h2>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-black text-cyan-100">{game.type}</span>
+                      <span className="rounded-full border border-violet-400/20 bg-violet-400/10 px-2 py-0.5 text-[10px] font-black text-violet-100">{game.mode}</span>
+                    </div>
+                    <p className="mt-3 line-clamp-2 text-sm leading-5 text-slate-400">{game.vibe}</p>
                   </div>
-                  <span onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }} className="rounded-full bg-slate-800 p-2">
+                  <span onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }} className="rounded-2xl bg-slate-800/90 p-2 transition group-hover:bg-slate-700">
                     {effectiveFavs.includes(game.id) ? <Star className="h-5 w-5 text-emerald-300" /> : <StarOff className="h-5 w-5 text-slate-400" />}
                   </span>
                 </div>
-
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  <Chip variant={canPlay ? "ok" : "danger"}>{canPlay ? "Se puede" : "No entra"}</Chip>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  <Chip variant={canPlay ? "ok" : "danger"}>{canPlay ? "Se puede" : `No entra con ${players}`}</Chip>
                   <Chip><Users size={13} />{game.min}–{game.max}</Chip>
                   <Chip><Clock size={13} />{timeText(game)}</Chip>
                   <Chip variant="purple">{timeLabel(game)}</Chip>
