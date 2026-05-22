@@ -1402,8 +1402,8 @@ export default function App() {
         onCancel={() => setPendingDelete(null)}
         onConfirm={confirmDeleteGame}
       />
-      <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 ${isCompactHeader ? "pb-3 pt-3" : "pb-4 pt-4"}`}>
+      <div className="mx-auto min-h-screen w-full max-w-6xl bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
+        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 lg:px-6 ${isCompactHeader ? "pb-3 pt-3" : "pb-5 pt-5"}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <D12Logo compact={isCompactHeader} />
@@ -1438,8 +1438,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-[1fr_1.6fr] ${isCompactHeader ? "mt-3" : "mt-4"}`}>
-            <div className={`rounded-3xl border border-emerald-400/25 bg-slate-900/80 text-center transition-all ${isCompactHeader ? "p-1.5" : "p-2"}`}>
+          <div className={`grid grid-cols-1 gap-3 transition-all duration-300 lg:grid-cols-[0.9fr_1.4fr] ${isCompactHeader ? "mt-3" : "mt-5"}`}>
+            <div className={`rounded-[1.7rem] border border-emerald-400/25 bg-slate-900/80 text-center shadow-lg shadow-emerald-950/20 transition-all ${isCompactHeader ? "p-1.5" : "p-2"}`}>
               {!isCompactHeader && <p className="text-[10px] font-bold uppercase text-emerald-200">Participantes</p>}
               <div className="flex items-center justify-center gap-2">
                 <button onClick={() => setPlayers((p) => Math.max(1, p - 1))} className="rounded-full bg-slate-800 p-2 text-white">
@@ -1458,7 +1458,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`rounded-3xl border border-cyan-400/20 bg-slate-950/45 p-3 transition-all duration-300 ${isCompactHeader ? "mt-3" : "mt-4"}`}>
+          <div className={`rounded-[1.7rem] border border-cyan-400/20 bg-gradient-to-r from-slate-950/75 via-slate-900/70 to-cyan-950/30 p-3 shadow-lg shadow-cyan-950/20 transition-all duration-300 ${isCompactHeader ? "mt-3" : "mt-4"}`}>
             <button type="button" onClick={() => setShowFilters((value) => !value)} className="flex w-full items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
@@ -1492,8 +1492,8 @@ export default function App() {
           </div>
         </div>
 
-        <main className="space-y-3 p-4">
-          <div className="rounded-3xl border border-emerald-300/25 bg-gradient-to-br from-emerald-400 to-cyan-400 p-4 text-slate-950 shadow-xl">
+        <main className="p-4 lg:p-6">
+          <div className="overflow-hidden rounded-[2rem] border border-emerald-300/25 bg-gradient-to-br from-emerald-300 via-cyan-300 to-teal-400 p-5 text-slate-950 shadow-2xl shadow-emerald-950/25">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold opacity-80">Disponibles ahora</p>
@@ -1521,8 +1521,9 @@ export default function App() {
           )}
 
           {visibleGames.length === 0 && <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-300">No hay juegos con esos filtros.</div>}
-          {visibleGames.map((game) => {
-            const canPlay = playable(game);
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {visibleGames.map((game) => {
+              const canPlay = playable(game);
             return (
               <button key={game.id} onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full rounded-3xl border border-slate-700/80 bg-slate-900/90 p-4 text-left shadow-lg transition active:scale-[0.99]">
                 <div className="flex items-start justify-between gap-3">
@@ -1543,10 +1544,11 @@ export default function App() {
                 </div>
               </button>
             );
-          })}
+            })}
+          </div>
         </main>
 
-        <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-md -translate-x-1/2 grid-cols-3 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">
+        <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-6xl -translate-x-1/2 grid-cols-3 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">
           <button onClick={() => { setScreen("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold ${screen === "home" ? "bg-emerald-400 text-slate-950" : "text-slate-300"}`}>
             <Home size={20} />
             Inicio
