@@ -22,6 +22,14 @@ import {
   ChevronUp,
   SlidersHorizontal
 } from "lucide-react";
+import { useAuth } from "./hooks/useAuth";
+import {
+  subscribeGames,
+  subscribeFavs,
+  setFavs as saveFavsToFirestore,
+  upsertGame,
+  deleteGame
+} from "./data/firestoreGames";
 
 const APP_NAME = "Roll For Game";
 const APP_SUBTITLE = "Elige tu próxima partida";
@@ -744,6 +752,10 @@ function normalizeCatalogGame(item, index) {
 export default function App() {
   const [screen, setScreen] = useState("home");
   const [players, setPlayers] = useState(5);
+  const { user, authLoading, loginGoogle, logout } = useAuth();
+  const [cloudGames, setCloudGames] = useState([]);
+  const [cloudFavs, setCloudFavs] = useState([]);
+  const [cloudLoading, setCloudLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [onlyPlayable, setOnlyPlayable] = useState(true);
   const [typeFilter, setTypeFilter] = useState("Todos");
@@ -770,20 +782,50 @@ export default function App() {
     }
   });
 
-const [importQuery, setImportQuery] = useState("");
-const [importResults, setImportResults] = useState([]);
-const [importLoading, setImportLoading] = useState(false);
+  const [importQuery, setImportQuery] = useState("");
+  const [importResults, setImportResults] = useState([]);
+  const [importLoading, setImportLoading] = useState(false);
+  const [catalog, setCatalog] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
 
-const [catalog, setCatalog] = useState([]);
-const [catalogLoading, setCatalogLoading] = useState(true);
+  const effectiveCustomGames = user ? cloudGames : customGames;
+  const effectiveFavs = user ? cloudFavs : favs;
 
+  const games = useMemo(
+    () => [...initialGames, ...effectiveCustomGames],
+    [effectiveCustomGames]
+  );
 
-  const games = useMemo(() => [...initialGames, ...customGames], [customGames]);
 
   useEffect(() => {
-  let active = true;
+    if (!user) {
+      setCloudGames([]);
+      setCloudFavs([]);
+      setCloudLoading(false);
+      return;
+    }
 
-  fetch("/catalog.json")
+    setCloudLoading(true);
+
+    const unsubscribeGames = subscribeGames(user.uid, (list) => {
+      setCloudGames(list);
+      setCloudLoading(false);
+    });
+
+    const unsubscribeFavs = subscribeFavs(user.uid, (ids) => {
+      setCloudFavs(ids);
+    });
+
+    return () => {
+      unsubscribeGames();
+      unsubscribeFavs();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    let active = true;
+
+    fetch("/catalog.json")
     .then((res) => {
       if (!res.ok) {
         throw new Error("No se pudo cargar catalog.json");
@@ -817,10 +859,10 @@ const [catalogLoading, setCatalogLoading] = useState(true);
       }
     });
 
-  return () => {
-    active = false;
-  };
-}, []);
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsCompactHeader(window.scrollY > 90);
@@ -830,31 +872,42 @@ const [catalogLoading, setCatalogLoading] = useState(true);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("mesa-juegos-favs", JSON.stringify(favs));
-  }, [favs]);
+    if (!user) {
+      localStorage.setItem("mesa-juegos-favs", JSON.stringify(favs));
+    }
+  }, [favs, user]);
 
   useEffect(() => {
-    localStorage.setItem("mesa-juegos-custom", JSON.stringify(customGames));
-  }, [customGames]);
+    if (!user) {
+      localStorage.setItem("mesa-juegos-custom", JSON.stringify(customGames));
+    }
+  }, [customGames, user]);
 
   const playable = (game) => players >= Number(game.min) && players <= Number(game.max);
 
   const visibleGames = useMemo(() => {
     return games
-      .filter((game) => screen !== "favorites" || favs.includes(game.id))
+      .filter((game) => screen !== "favorites" || effectiveFavs.includes(game.id))
       .filter((game) => !onlyPlayable || playable(game))
       .filter((game) => typeFilter === "Todos" || game.type === typeFilter)
       .filter((game) => modeFilter === "Todos" || game.mode === modeFilter)
       .filter((game) => timeFilter === "Todos" || timeLabel(game) === timeFilter)
       .filter((game) => `${game.name} ${game.type} ${game.mode}`.toLowerCase().includes(query.toLowerCase()))
       .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
-  }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, favs, screen]);
+  }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, effectiveFavs, screen]);
 
-  const saveManualGame = () => {
+  const saveManualGame = async () => {
     if (!form.name.trim()) return;
 
-    const setup = form.setupText.split("\n").map((x) => x.trim()).filter(Boolean);
-    const howTo = form.howToText.split("\n").map((x) => x.trim()).filter(Boolean);
+    const setup = form.setupText
+      .split("\n")
+      .map((x) => x.trim())
+      .filter(Boolean);
+
+    const howTo = form.howToText
+      .split("\n")
+      .map((x) => x.trim())
+      .filter(Boolean);
 
     const newGame = {
       id: `custom-${Date.now()}`,
@@ -869,28 +922,64 @@ const [catalogLoading, setCatalogLoading] = useState(true);
       age: form.age || "N/D",
       level: form.level,
       vibe: form.vibe || "Juego agregado manualmente.",
-      videoUrl: form.videoUrl || `https://www.youtube.com/results?search_query=${encodeURIComponent(form.name + " como jugar")}`,
-      rulesUrl: form.rulesUrl || `https://www.google.com/search?q=${encodeURIComponent(form.name + " reglas")}`,
-      setup: setup.length ? setup : ["Prepará los componentes del juego según el reglamento."],
-      howTo: howTo.length ? howTo : ["Jugá siguiendo la secuencia indicada por el reglamento."],
+      videoUrl:
+        form.videoUrl ||
+        `https://www.youtube.com/results?search_query=${encodeURIComponent(
+          form.name + " como jugar"
+        )}`,
+      rulesUrl:
+        form.rulesUrl ||
+        `https://www.google.com/search?q=${encodeURIComponent(
+          form.name + " reglas"
+        )}`,
+      setup: setup.length
+        ? setup
+        : ["Prepará los componentes del juego según el reglamento."],
+      howTo: howTo.length
+        ? howTo
+        : ["Jugá siguiendo la secuencia indicada por el reglamento."],
       playerSetups: []
     };
 
-    setCustomGames((prev) => [newGame, ...prev]);
+    if (user) {
+      await upsertGame(user.uid, newGame);
+    } else {
+      setCustomGames((prev) => [newGame, ...prev]);
+    }
+
     setSelected(newGame);
     setForm(emptyForm);
     setScreen("detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const toggleFav = (id) => {
-    setFavs((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const toggleFav = async (id) => {
+    if (!user) {
+      setFavs((prev) =>
+        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      );
+      return;
+    }
+
+    const nextFavs = effectiveFavs.includes(id)
+      ? effectiveFavs.filter((x) => x !== id)
+      : [...effectiveFavs, id];
+
+    await saveFavsToFirestore(user.uid, nextFavs);
   };
 
-  const deleteCustomGame = (id) => {
-    
-    setCustomGames((prev) => prev.filter((game) => game.id !== id));
-    setFavs((prev) => prev.filter((fav) => fav !== id));
+  const deleteCustomGame = async (id) => {
+    if (user) {
+      await deleteGame(user.uid, id);
+      await saveFavsToFirestore(
+        user.uid,
+        effectiveFavs.filter((fav) => fav !== id)
+      );
+    } else {
+      setCustomGames((prev) => prev.filter((game) => game.id !== id));
+      setFavs((prev) => prev.filter((fav) => fav !== id));
+    }
+
     setSelected(null);
     setScreen("home");
   };
@@ -941,7 +1030,7 @@ const [catalogLoading, setCatalogLoading] = useState(true);
               </div>
 
               <button onClick={() => toggleFav(selected.id)} className="rounded-2xl bg-slate-800 p-3">
-                {favs.includes(selected.id) ? <Star className="text-emerald-300" /> : <StarOff className="text-slate-300" />}
+                {effectiveFavs.includes(selected.id) ? <Star className="text-emerald-300" /> : <StarOff className="text-slate-300" />}
               </button>
             </div>
           </div>
@@ -1121,7 +1210,7 @@ const [catalogLoading, setCatalogLoading] = useState(true);
                     </div>
 
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         if (alreadyExists) {
                           const existingGame = games.find(
                             (existing) =>
@@ -1149,7 +1238,12 @@ const [catalogLoading, setCatalogLoading] = useState(true);
                           playerSetups: []
                         };
 
-                        setCustomGames((prev) => [newGame, ...prev]);
+                        if (user) {
+                          await upsertGame(user.uid, newGame);
+                        } else {
+                          setCustomGames((prev) => [newGame, ...prev]);
+                        }
+
                         setSelected(newGame);
                         setScreen("detail");
                         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1236,7 +1330,30 @@ const [catalogLoading, setCatalogLoading] = useState(true);
                 {!isCompactHeader && <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{APP_SUBTITLE}</p>}
               </div>
             </div>
-            <DragonCornerIcon compact={isCompactHeader} />
+            <div className="flex items-center gap-2">
+              {authLoading ? (
+                <span className="rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-bold text-slate-300">
+                  ...
+                </span>
+              ) : user ? (
+                <button
+                  onClick={logout}
+                  className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-black text-emerald-200"
+                  title={user.email || "Usuario logueado"}
+                >
+                  Salir
+                </button>
+              ) : (
+                <button
+                  onClick={loginGoogle}
+                  className="rounded-2xl bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950"
+                >
+                  Google
+                </button>
+              )}
+
+              <DragonCornerIcon compact={isCompactHeader} />
+            </div>
           </div>
 
           <div className={`grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-[1fr_1.6fr] ${isCompactHeader ? "mt-3" : "mt-4"}`}>
@@ -1298,7 +1415,7 @@ const [catalogLoading, setCatalogLoading] = useState(true);
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold opacity-80">Disponibles ahora</p>
-                <p className="text-4xl font-black">{visibleGames.length}/{screen === "favorites" ? favs.length : games.length}</p>
+                <p className="text-4xl font-black">{visibleGames.length}/{screen === "favorites" ? effectiveFavs.length : games.length}</p>
               </div>
               <Trophy className="h-12 w-12 opacity-80" />
             </div>            
@@ -1315,7 +1432,7 @@ const [catalogLoading, setCatalogLoading] = useState(true);
                     <p className="text-sm text-slate-300">{game.type} · {game.mode}</p>
                   </div>
                   <span onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }} className="rounded-full bg-slate-800 p-2">
-                    {favs.includes(game.id) ? <Star className="h-5 w-5 text-emerald-300" /> : <StarOff className="h-5 w-5 text-slate-400" />}
+                    {effectiveFavs.includes(game.id) ? <Star className="h-5 w-5 text-emerald-300" /> : <StarOff className="h-5 w-5 text-slate-400" />}
                   </span>
                 </div>
 
