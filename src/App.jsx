@@ -666,7 +666,7 @@ function DeleteConfirmModal({ game, onCancel, onConfirm }) {
           <div>
             <h2 className="text-xl font-black text-white">Borrar juego</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Vas a borrar <b>{game.name}</b> de tu listado. Esta acción también lo quita de favoritos.
+              Vas a borrar <b translate="no" className="notranslate">{game.name}</b> de tu listado. Esta acción también lo quita de favoritos.
             </p>
           </div>
         </div>
@@ -692,13 +692,13 @@ function DeleteConfirmModal({ game, onCancel, onConfirm }) {
 
 function LoginScreen({ authLoading, loginGoogle, onContinueOffline }) {
   return (
-    <div className="min-h-screen bg-[#031313] px-4 py-6 text-slate-100">
+    <div translate="no" className="notranslate min-h-screen bg-[#031313] px-4 py-6 text-slate-100">
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl items-center gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="rounded-[2rem] border border-cyan-400/20 bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_35%,#020617_80%)] p-6 shadow-2xl lg:p-10">
           <div className="flex items-center gap-4">
             <D12Logo />
             <div>
-              <h1 className="text-3xl font-black text-white lg:text-5xl">{APP_NAME}</h1>
+              <h1 translate="no" className="notranslate text-3xl font-black text-white lg:text-5xl">{APP_NAME}</h1>
               <p className="mt-1 text-xs font-black uppercase tracking-wide text-emerald-300 lg:text-sm">
                 {APP_SUBTITLE}
               </p>
@@ -1163,7 +1163,7 @@ export default function App() {
     const playerSpecificSetup = getPlayerSpecificSetup(selected, players);
 
     return (
-      <div className="min-h-screen bg-[#031313] text-slate-100">
+      <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
         <ToastMessage toast={toast} />
         <DeleteConfirmModal
           game={pendingDelete}
@@ -1184,7 +1184,7 @@ export default function App() {
                 <Chip variant={playable(selected) ? "ok" : "danger"}>
                   {playable(selected) ? "Se puede jugar" : "No entra con este grupo"}
                 </Chip>
-                <h1 className="mt-4 text-3xl font-black text-white">{selected.name}</h1>
+                <h1 translate="no" className="notranslate mt-4 text-3xl font-black text-white">{selected.name}</h1>
                 <p className="mt-2 text-sm text-cyan-100">{selected.vibe}</p>
               </div>
 
@@ -1287,7 +1287,7 @@ export default function App() {
   
   if (screen === "import") {
     return (
-      <div className="min-h-screen bg-[#031313] text-slate-100">
+      <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
         <ToastMessage toast={toast} />
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
@@ -1362,7 +1362,7 @@ export default function App() {
                     className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900 p-3"
                   >
                     <div>
-                      <p className="font-bold text-white">{game.name}</p>
+                      <p translate="no" className="notranslate font-bold text-white">{game.name}</p>
 
                       <p className="text-xs text-slate-400">
                         {game.min}–{game.max} jug · {timeText(game)} · {game.type}
@@ -1428,52 +1428,78 @@ export default function App() {
 
   if (screen === "add") {
     return (
-      <div className="min-h-screen bg-[#031313] text-slate-100">
+      <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
         <ToastMessage toast={toast} />
-        <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
+        <div className="mx-auto min-h-screen w-full max-w-6xl bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
+          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-4 backdrop-blur-xl lg:px-6">
             <button onClick={() => setScreen("home")} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
               <ArrowLeft size={16} />
               Volver
             </button>
-            <h1 className="mt-4 text-2xl font-black text-white">Agregar juego</h1>
-            <p className="mt-1 text-sm text-slate-300">Cargá un juego manualmente. Se guarda solo en este dispositivo.</p>
+
+            <div className="mt-5 rounded-[2rem] border border-cyan-400/20 bg-slate-950/45 p-5 shadow-xl shadow-cyan-950/20">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Nuevo juego</p>
+              <h1 className="mt-2 text-3xl font-black text-white">Agregar juego</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+                Cargá un juego manualmente, importalo desde el catálogo o dejá preparada una guía rápida para explicar la partida.
+              </p>
+            </div>
           </div>
 
-          <main className="space-y-3 p-4">
-            <button
-              onClick={() => setScreen("import")}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950">
-              Importar desde catálogo
-            </button>
-            <Field label="Nombre del juego" value={form.name} onChange={(value) => setForm({ ...form, name: value })} placeholder="Ej: Codenames" />
+          <main className="grid gap-4 p-4 lg:grid-cols-[0.8fr_1.2fr] lg:p-6">
+            <aside className="space-y-4">
+              <button
+                onClick={() => setScreen("import")}
+                className="flex w-full items-center justify-center gap-2 rounded-3xl bg-cyan-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/25">
+                Importar desde catálogo
+              </button>
 
-            <div className="grid grid-cols-2 gap-2">
-              <Field label="Mín. jugadores" type="number" value={form.min} onChange={(value) => setForm({ ...form, min: value })} />
-              <Field label="Máx. jugadores" type="number" value={form.max} onChange={(value) => setForm({ ...form, max: value })} />
-            </div>
+              <div className="rounded-[2rem] border border-emerald-400/25 bg-emerald-400/10 p-4 text-sm leading-6 text-emerald-50">
+                <b>Tip:</b> si el juego está en el catálogo, conviene importarlo primero y después completar preparación o reglas manualmente.
+              </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <Field label="Tiempo mín." type="number" value={form.timeMin} onChange={(value) => setForm({ ...form, timeMin: value })} />
-              <Field label="Tiempo máx." type="number" value={form.timeMax} onChange={(value) => setForm({ ...form, timeMax: value })} />
-            </div>
+              <div className="rounded-[2rem] border border-slate-700 bg-slate-950/70 p-4 text-sm leading-6 text-slate-300">
+                <p className="font-black text-white">Datos mínimos</p>
+                <p className="mt-1">Nombre, jugadores, duración y tipo alcanzan para que aparezca en la lista principal.</p>
+              </div>
+            </aside>
 
-            <LabeledSelect label="Tipo" value={form.type} onChange={(value) => setForm({ ...form, type: value })} options={typeOptions.filter((x) => x !== "Todos")} />
-            <LabeledSelect label="Modo" value={form.mode} onChange={(value) => setForm({ ...form, mode: value })} options={modeOptions.filter((x) => x !== "Todos")} />
-            <LabeledSelect label="Dificultad" value={form.level} onChange={(value) => setForm({ ...form, level: value })} options={["Bajo", "Medio", "Alto"]} />
+            <section className="space-y-4 rounded-[2rem] border border-slate-700/80 bg-slate-950/65 p-4 shadow-2xl shadow-slate-950/30 lg:p-5">
+              <div className="grid gap-3 lg:grid-cols-2">
+                <Field label="Nombre del juego" value={form.name} onChange={(value) => setForm({ ...form, name: value })} placeholder="Ej: Codenames" />
+                <Field label="Edad sugerida" value={form.age} onChange={(value) => setForm({ ...form, age: value })} placeholder="Ej: 10+" />
+              </div>
 
-            <Field label="Edad sugerida" value={form.age} onChange={(value) => setForm({ ...form, age: value })} placeholder="Ej: 10+" />
-            <Field label="Resumen" value={form.vibe} onChange={(value) => setForm({ ...form, vibe: value })} placeholder="Ej: Deducción rápida por equipos" />
-            <Field label="Link a video" value={form.videoUrl} onChange={(value) => setForm({ ...form, videoUrl: value })} placeholder="Opcional" />
-            <Field label="Link a instructivo/reglas" value={form.rulesUrl} onChange={(value) => setForm({ ...form, rulesUrl: value })} placeholder="Opcional" />
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <Field label="Mín. jugadores" type="number" value={form.min} onChange={(value) => setForm({ ...form, min: value })} />
+                <Field label="Máx. jugadores" type="number" value={form.max} onChange={(value) => setForm({ ...form, max: value })} />
+                <Field label="Tiempo mín." type="number" value={form.timeMin} onChange={(value) => setForm({ ...form, timeMin: value })} />
+                <Field label="Tiempo máx." type="number" value={form.timeMax} onChange={(value) => setForm({ ...form, timeMax: value })} />
+              </div>
 
-            <TextAreaField label="Preparación" value={form.setupText} onChange={(value) => setForm({ ...form, setupText: value })} placeholder={"Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."} />
-            <TextAreaField label="Cómo se juega" value={form.howToText} onChange={(value) => setForm({ ...form, howToText: value })} placeholder={"Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."} />
+              <div className="grid gap-3 lg:grid-cols-3">
+                <LabeledSelect label="Tipo" value={form.type} onChange={(value) => setForm({ ...form, type: value })} options={typeOptions.filter((x) => x !== "Todos")} />
+                <LabeledSelect label="Modo" value={form.mode} onChange={(value) => setForm({ ...form, mode: value })} options={modeOptions.filter((x) => x !== "Todos")} />
+                <LabeledSelect label="Dificultad" value={form.level} onChange={(value) => setForm({ ...form, level: value })} options={["Bajo", "Medio", "Alto"]} />
+              </div>
 
-            <button onClick={saveManualGame} className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950">
-              <Save size={18} />
-              Guardar juego
-            </button>
+              <Field label="Resumen" value={form.vibe} onChange={(value) => setForm({ ...form, vibe: value })} placeholder="Ej: Deducción rápida por equipos" />
+
+              <div className="grid gap-3 lg:grid-cols-2">
+                <Field label="Link a video" value={form.videoUrl} onChange={(value) => setForm({ ...form, videoUrl: value })} placeholder="Opcional" />
+                <Field label="Link a instructivo/reglas" value={form.rulesUrl} onChange={(value) => setForm({ ...form, rulesUrl: value })} placeholder="Opcional" />
+              </div>
+
+              <div className="grid gap-3 lg:grid-cols-2">
+                <TextAreaField label="Preparación" value={form.setupText} onChange={(value) => setForm({ ...form, setupText: value })} placeholder={"Un paso por línea.\nEj: Separar cartas.\nRepartir roles.\nPreparar tablero."} />
+                <TextAreaField label="Cómo se juega" value={form.howToText} onChange={(value) => setForm({ ...form, howToText: value })} placeholder={"Un paso por línea.\nEj: En tu turno robás una carta.\nLuego jugás una acción.\nGana quien llegue al objetivo."} />
+              </div>
+
+              <button onClick={saveManualGame} className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-emerald-950/25">
+                <Save size={18} />
+                Guardar juego
+              </button>
+            </section>
           </main>
         </div>
       </div>
@@ -1481,7 +1507,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#031313] text-slate-100">
+    <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
       <ToastMessage toast={toast} />
       <DeleteConfirmModal
         game={pendingDelete}
@@ -1494,7 +1520,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <D12Logo compact={isCompactHeader} />
               <div>
-                <h1 className={`font-black text-white transition-all ${isCompactHeader ? "text-xl" : "text-2xl"}`}>{APP_NAME}</h1>
+                <h1 translate="no" className={`notranslate font-black text-white transition-all ${isCompactHeader ? "text-xl" : "text-2xl"}`}>{APP_NAME}</h1>
                 {!isCompactHeader && <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{APP_SUBTITLE}</p>}
               </div>
             </div>
@@ -1594,7 +1620,7 @@ export default function App() {
             <div className="rounded-3xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-100">
               <div className="flex items-center justify-between gap-3">
                 <span>
-                  <b>{deleteNotice.name}</b> se borró correctamente del listado.
+                  <b translate="no" className="notranslate">{deleteNotice.name}</b> se borró correctamente del listado.
                 </span>
                 <button
                   onClick={() => setDeleteNotice(null)}
@@ -1614,7 +1640,7 @@ export default function App() {
               <button key={game.id} onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full rounded-3xl border border-slate-700/80 bg-slate-900/90 p-4 text-left shadow-lg transition active:scale-[0.99]">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-black text-white">{game.name}</h2>
+                    <h2 translate="no" className="notranslate text-lg font-black text-white">{game.name}</h2>
                     <p className="text-sm text-slate-300">{game.type} · {game.mode}</p>
                   </div>
                   <span onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }} className="rounded-full bg-slate-800 p-2">
