@@ -897,6 +897,8 @@ export default function App() {
     setupText: "",
     howToText: ""
   });
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [noteText, setNoteText] = useState("");
 
   const [customGames, setCustomGames] = useState(() => {
     try {
@@ -1216,6 +1218,37 @@ export default function App() {
     showToast("Guía actualizada correctamente.");
   };
 
+
+  const openEditNotes = (game) => {
+    setNoteText(game.personalNotes || "");
+    setIsEditingNotes(true);
+  };
+
+  const saveNotes = async () => {
+    if (!selected) return;
+
+    const updatedGame = {
+      ...selected,
+      custom: true,
+      personalNotes: noteText.trim()
+    };
+
+    if (user) {
+      await upsertGame(user.uid, updatedGame);
+    } else {
+      setCustomGames((prev) => {
+        const exists = prev.some((game) => game.id === updatedGame.id);
+        return exists
+          ? prev.map((game) => (game.id === updatedGame.id ? updatedGame : game))
+          : [updatedGame, ...prev];
+      });
+    }
+
+    setSelected(updatedGame);
+    setIsEditingNotes(false);
+    showToast("Notas personales actualizadas.");
+  };
+
   const confirmDeleteGame = async () => {
     if (!pendingDelete) return;
 
@@ -1295,6 +1328,7 @@ export default function App() {
               <button
                 onClick={() => {
                   setIsEditingGuide(false);
+                  setIsEditingNotes(false);
                   setScreen("home");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
@@ -1360,6 +1394,59 @@ export default function App() {
                 <a href={selected.rulesUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-300">
                   Instructivo <ExternalLink size={15} />
                 </a>
+              </section>
+
+              <section className="rounded-[1.5rem] border border-violet-400/25 bg-violet-400/10 p-4 shadow-lg shadow-violet-950/10">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-200">Notas personales</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-400">Variantes, aclaraciones o recordatorios propios para este juego.</p>
+                  </div>
+                  {!isEditingNotes && (
+                    <button
+                      type="button"
+                      onClick={() => openEditNotes(selected)}
+                      className="rounded-2xl border border-violet-400/25 bg-slate-950/50 px-3 py-2 text-xs font-black text-violet-100 transition hover:border-violet-300/50"
+                    >
+                      Editar
+                    </button>
+                  )}
+                </div>
+
+                {isEditingNotes ? (
+                  <div className="mt-3 space-y-3">
+                    <TextAreaField
+                      label="Nota"
+                      value={noteText}
+                      onChange={setNoteText}
+                      placeholder="Ej: usar variante corta, recordar una regla casera, aclarar desempates..."
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingNotes(false)}
+                        className="rounded-2xl border border-slate-700 bg-slate-900 px-3 py-3 text-sm font-black text-slate-200"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={saveNotes}
+                        className="rounded-2xl bg-violet-400 px-3 py-3 text-sm font-black text-slate-950 transition hover:bg-violet-300"
+                      >
+                        Guardar nota
+                      </button>
+                    </div>
+                  </div>
+                ) : selected.personalNotes ? (
+                  <p className="mt-3 whitespace-pre-line rounded-2xl border border-violet-400/20 bg-slate-950/45 p-3 text-sm leading-6 text-violet-50">
+                    {selected.personalNotes}
+                  </p>
+                ) : (
+                  <p className="mt-3 rounded-2xl border border-slate-700 bg-slate-950/45 p-3 text-sm leading-6 text-slate-500">
+                    Todavía no cargaste notas personales para este juego.
+                  </p>
+                )}
               </section>
 
               {selected.custom && (
