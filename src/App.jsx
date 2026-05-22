@@ -889,6 +889,14 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [isEditingGuide, setIsEditingGuide] = useState(false);
+  const [guideForm, setGuideForm] = useState({
+    vibe: "",
+    videoUrl: "",
+    rulesUrl: "",
+    setupText: "",
+    howToText: ""
+  });
 
   const [customGames, setCustomGames] = useState(() => {
     try {
@@ -915,10 +923,13 @@ export default function App() {
   const effectiveCustomGames = user ? cloudGames : customGames;
   const effectiveFavs = user ? cloudFavs : favs;
 
-  const games = useMemo(
-    () => [...initialGames, ...effectiveCustomGames],
-    [effectiveCustomGames]
-  );
+  const games = useMemo(() => {
+    const mergedGames = new Map(initialGames.map((game) => [game.id, game]));
+    effectiveCustomGames.forEach((game) => {
+      mergedGames.set(game.id, game);
+    });
+    return Array.from(mergedGames.values());
+  }, [effectiveCustomGames]);
 
 
   useEffect(() => {
@@ -1156,6 +1167,55 @@ export default function App() {
     setPendingDelete(game);
   };
 
+  const openEditGuide = (game) => {
+    setGuideForm({
+      vibe: game.vibe || "",
+      videoUrl: game.videoUrl || "",
+      rulesUrl: game.rulesUrl || "",
+      setupText: Array.isArray(game.setup) ? game.setup.join("\n") : "",
+      howToText: Array.isArray(game.howTo) ? game.howTo.join("\n") : ""
+    });
+    setIsEditingGuide(true);
+  };
+
+  const saveGuide = async () => {
+    if (!selected) return;
+
+    const setup = guideForm.setupText
+      .split("\n")
+      .map((step) => step.trim())
+      .filter(Boolean);
+    const howTo = guideForm.howToText
+      .split("\n")
+      .map((step) => step.trim())
+      .filter(Boolean);
+
+    const updatedGame = {
+      ...selected,
+      custom: true,
+      vibe: guideForm.vibe.trim() || selected.vibe || "Guía personalizada.",
+      videoUrl: guideForm.videoUrl.trim() || selected.videoUrl || "",
+      rulesUrl: guideForm.rulesUrl.trim() || selected.rulesUrl || "",
+      setup: setup.length ? setup : ["Preparación no disponible."],
+      howTo: howTo.length ? howTo : ["Reglas no disponibles."]
+    };
+
+    if (user) {
+      await upsertGame(user.uid, updatedGame);
+    } else {
+      setCustomGames((prev) => {
+        const exists = prev.some((game) => game.id === updatedGame.id);
+        return exists
+          ? prev.map((game) => (game.id === updatedGame.id ? updatedGame : game))
+          : [updatedGame, ...prev];
+      });
+    }
+
+    setSelected(updatedGame);
+    setIsEditingGuide(false);
+    showToast("Guía actualizada correctamente.");
+  };
+
   const confirmDeleteGame = async () => {
     if (!pendingDelete) return;
 
@@ -1217,6 +1277,8 @@ export default function App() {
 
   if (screen === "detail" && selected) {
     const playerSpecificSetup = getPlayerSpecificSetup(selected, players);
+    const setupSteps = Array.isArray(selected.setup) ? selected.setup : [];
+    const howToSteps = Array.isArray(selected.howTo) ? selected.howTo : [];
 
     return (
       <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
@@ -1226,121 +1288,213 @@ export default function App() {
           onCancel={() => setPendingDelete(null)}
           onConfirm={confirmDeleteGame}
         />
-        <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
-          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
-            <button onClick={() => { setScreen("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
-              <ArrowLeft size={16} />
-              Volver
-            </button>
-          </div>
 
-          <div className="overflow-hidden rounded-b-[2rem] bg-gradient-to-br from-slate-900 via-teal-950 to-cyan-950 p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <Chip variant={playable(selected) ? "ok" : "danger"}>
-                  {playable(selected) ? "Se puede jugar" : "No entra con este grupo"}
-                </Chip>
-                <h1 translate="no" className="notranslate mt-4 text-3xl font-black text-white">{selected.name}</h1>
-                <p className="mt-2 text-sm text-cyan-100">{selected.vibe}</p>
-              </div>
-
-              <button onClick={() => toggleFav(selected.id)} className="rounded-2xl bg-slate-800 p-3">
-                {effectiveFavs.includes(selected.id) ? <Star className="text-emerald-300" /> : <StarOff className="text-slate-300" />}
+        <div className="mx-auto min-h-screen w-full max-w-6xl bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
+          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/92 px-4 py-3 backdrop-blur-xl lg:px-6">
+            <div className="flex items-center justify-between gap-3">
+              <button
+                onClick={() => {
+                  setIsEditingGuide(false);
+                  setScreen("home");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300 transition hover:bg-slate-700"
+              >
+                <ArrowLeft size={16} />
+                Volver
               </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => openEditGuide(selected)}
+                  className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-black text-cyan-100 transition hover:border-emerald-300/50 hover:text-emerald-200"
+                >
+                  Editar guía
+                </button>
+                <button onClick={() => toggleFav(selected.id)} className="rounded-2xl bg-slate-800 p-3 transition hover:bg-slate-700">
+                  {effectiveFavs.includes(selected.id) ? <Star className="text-emerald-300" /> : <StarOff className="text-slate-300" />}
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-5 p-4">
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-3">
-                <Users className="mx-auto h-4 w-4 text-emerald-300" />
-                <p className="text-xs text-slate-400">Jug.</p>
-                <b>{selected.min}–{selected.max}</b>
-              </div>
-              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-3">
-                <Clock className="mx-auto h-4 w-4 text-cyan-300" />
-                <p className="text-xs text-slate-400">Tiempo</p>
-                <b>{timeText(selected)}</b>
-              </div>
-              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-3">
-                <Trophy className="mx-auto h-4 w-4 text-violet-300" />
-                <p className="text-xs text-slate-400">Nivel</p>
-                <b>{selected.level}</b>
-              </div>
-            </div>
+          <main className="grid gap-4 p-4 lg:grid-cols-[0.82fr_1.18fr] lg:p-6">
+            <aside className="space-y-4">
+              <section className="overflow-hidden rounded-[2rem] border border-cyan-400/20 bg-slate-950/70 p-5 shadow-2xl shadow-cyan-950/20">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Chip variant={playable(selected) ? "ok" : "danger"}>
+                    {playable(selected) ? "Se puede jugar" : "No entra con este grupo"}
+                  </Chip>
+                  <Chip>{selected.type}</Chip>
+                  <Chip variant="purple">{selected.mode}</Chip>
+                </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <a href={selected.videoUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-3 py-3 text-sm font-black text-slate-950">
-                Video <ExternalLink size={15} />
-              </a>
-              <a href={selected.rulesUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950">
-                Instructivo <ExternalLink size={15} />
-              </a>
-            </div>
-
-            {playerSpecificSetup.length > 0 && (
-              <section>
-                <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
-                  <Users className="text-emerald-300" />
-                  Seteo para {players} jugadores
-                </h2>
-                <ol className="space-y-2">
-                  {playerSpecificSetup.map((step, index) => (
-                    <li key={index} className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">{index + 1}</span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
+                <h1 translate="no" className="notranslate mt-4 text-3xl font-black leading-tight text-white lg:text-4xl">
+                  {selected.name}
+                </h1>
+                <p className="mt-3 text-sm leading-6 text-slate-300">{selected.vibe}</p>
               </section>
-            )}
 
-            <section>
-              <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
-                <BookOpen className="text-cyan-300" />
-                Preparación del juego
-              </h2>
-              <ol className="space-y-2">
-                {selected.setup.map((step, index) => (
-                  <li key={index} className="flex gap-3 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 p-3 text-sm leading-5 text-cyan-50">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-xs font-black text-slate-950">{index + 1}</span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ol>
+              <section className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-2xl border border-slate-700 bg-slate-950/70 p-3">
+                  <Users className="mx-auto h-4 w-4 text-emerald-300" />
+                  <p className="mt-1 text-[10px] font-black uppercase tracking-wide text-slate-500">Jug.</p>
+                  <b>{selected.min}–{selected.max}</b>
+                </div>
+                <div className="rounded-2xl border border-slate-700 bg-slate-950/70 p-3">
+                  <Clock className="mx-auto h-4 w-4 text-cyan-300" />
+                  <p className="mt-1 text-[10px] font-black uppercase tracking-wide text-slate-500">Tiempo</p>
+                  <b>{timeText(selected)}</b>
+                </div>
+                <div className="rounded-2xl border border-slate-700 bg-slate-950/70 p-3">
+                  <Trophy className="mx-auto h-4 w-4 text-violet-300" />
+                  <p className="mt-1 text-[10px] font-black uppercase tracking-wide text-slate-500">Nivel</p>
+                  <b>{selected.level}</b>
+                </div>
+              </section>
+
+              <section className="grid grid-cols-2 gap-2">
+                <a href={selected.videoUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-3 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-300">
+                  Video <ExternalLink size={15} />
+                </a>
+                <a href={selected.rulesUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-300">
+                  Instructivo <ExternalLink size={15} />
+                </a>
+              </section>
+
+              {selected.custom && (
+                <button onClick={() => requestDeleteGame(selected)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white transition hover:bg-red-400">
+                  <Trash2 size={16} />
+                  Borrar juego agregado
+                </button>
+              )}
+
+              <div className="rounded-[1.5rem] border border-amber-300/35 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
+                <b>Nota:</b> esta guía sirve para arrancar rápido. Para desempates, variantes o casos especiales, revisá el reglamento de tu edición.
+              </div>
+            </aside>
+
+            <section className="space-y-4">
+              {isEditingGuide ? (
+                <div className="rounded-[2rem] border border-emerald-400/25 bg-slate-950/75 p-4 shadow-2xl shadow-emerald-950/15 lg:p-5">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Editor</p>
+                      <h2 className="mt-1 text-2xl font-black text-white">Editar guía rápida</h2>
+                      <p className="mt-1 text-sm leading-6 text-slate-400">
+                        Los cambios se guardan como guía personalizada. Si el juego era base, esta guía pisa la versión base para tu usuario/dispositivo.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingGuide(false)}
+                      className="rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-black text-slate-200"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+
+                  <div className="mt-4 space-y-4">
+                    <Field
+                      label="Resumen"
+                      value={guideForm.vibe}
+                      onChange={(value) => setGuideForm({ ...guideForm, vibe: value })}
+                      placeholder="Resumen corto del juego"
+                    />
+                    <div className="grid gap-3 lg:grid-cols-2">
+                      <Field
+                        label="Link a video"
+                        value={guideForm.videoUrl}
+                        onChange={(value) => setGuideForm({ ...guideForm, videoUrl: value })}
+                        placeholder="Opcional"
+                      />
+                      <Field
+                        label="Link a instructivo/reglas"
+                        value={guideForm.rulesUrl}
+                        onChange={(value) => setGuideForm({ ...guideForm, rulesUrl: value })}
+                        placeholder="Opcional"
+                      />
+                    </div>
+                    <div className="grid gap-3 lg:grid-cols-2">
+                      <TextAreaField
+                        label="Preparación"
+                        value={guideForm.setupText}
+                        onChange={(value) => setGuideForm({ ...guideForm, setupText: value })}
+                        placeholder={setupPlaceholder}
+                      />
+                      <TextAreaField
+                        label="Cómo se juega"
+                        value={guideForm.howToText}
+                        onChange={(value) => setGuideForm({ ...guideForm, howToText: value })}
+                        placeholder={howToPlaceholder}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={saveGuide}
+                      className="flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-emerald-950/25 transition hover:bg-emerald-300"
+                    >
+                      <Save size={18} />
+                      Guardar guía
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {playerSpecificSetup.length > 0 && (
+                    <section className="rounded-[2rem] border border-emerald-400/20 bg-slate-950/65 p-4 shadow-xl shadow-emerald-950/10">
+                      <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
+                        <Users className="text-emerald-300" />
+                        Seteo para {players} jugadores
+                      </h2>
+                      <ol className="space-y-2">
+                        {playerSpecificSetup.map((step, index) => (
+                          <li key={index} className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">{index + 1}</span>
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </section>
+                  )}
+
+                  <section className="rounded-[2rem] border border-cyan-400/20 bg-slate-950/65 p-4 shadow-xl shadow-cyan-950/10">
+                    <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
+                      <BookOpen className="text-cyan-300" />
+                      Preparación del juego
+                    </h2>
+                    <ol className="space-y-2">
+                      {setupSteps.map((step, index) => (
+                        <li key={index} className="flex gap-3 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 p-3 text-sm leading-5 text-cyan-50">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-xs font-black text-slate-950">{index + 1}</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+
+                  <section className="rounded-[2rem] border border-emerald-400/20 bg-slate-950/65 p-4 shadow-xl shadow-emerald-950/10">
+                    <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
+                      <PlayCircle className="text-emerald-300" />
+                      Cómo se juega
+                    </h2>
+                    <ol className="space-y-2">
+                      {howToSteps.map((step, index) => (
+                        <li key={index} className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">{index + 1}</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+                </>
+              )}
             </section>
-
-            <section>
-              <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white">
-                <PlayCircle className="text-emerald-300" />
-                Cómo se juega
-              </h2>
-              <ol className="space-y-2">
-                {selected.howTo.map((step, index) => (
-                  <li key={index} className="flex gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-5 text-emerald-50">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-xs font-black text-slate-950">{index + 1}</span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            {selected.custom && (
-              <button onClick={() => requestDeleteGame(selected)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white">
-                <Trash2 size={16} />
-                Borrar juego agregado
-              </button>
-            )}
-
-            <div className="rounded-3xl border border-amber-300/35 bg-amber-300/10 p-3 text-sm text-amber-100">
-              <b>Nota:</b> esta guía sirve para arrancar rápido. Para desempates, variantes o casos especiales, revisá el reglamento de tu edición.
-            </div>
-          </div>
+          </main>
         </div>
       </div>
     );
   }
-  
   if (screen === "import") {
     return (
       <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
@@ -1649,17 +1803,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setIsSearchOpen((value) => !value)}
-                  className="flex h-full min-h-[58px] w-full items-center justify-center px-1 transition lg:w-[52px]"
+                  className={`flex h-full min-h-[58px] w-full items-center justify-center rounded-[1.5rem] border px-3 transition lg:w-[76px] ${
+                    isSearchOpen || query
+                      ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-100"
+                      : "border-cyan-400/20 bg-slate-950/55 text-cyan-100 hover:border-emerald-300/50 hover:text-emerald-200"
+                  }`}
                   aria-label="Buscar juego"
                   title="Buscar juego"
                 >
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-2xl text-slate-950 transition ${
-                      isSearchOpen || query
-                        ? "bg-emerald-300 shadow-lg shadow-emerald-950/20"
-                        : "bg-emerald-400 hover:bg-emerald-300"
-                    }`}
-                  >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
                     <Search size={18} />
                   </div>
                 </button>
