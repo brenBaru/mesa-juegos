@@ -886,6 +886,7 @@ export default function App() {
   const [timeFilter, setTimeFilter] = useState("Todos");
   const [showFilters, setShowFilters] = useState(false);
   const [isCompactHeader, setIsCompactHeader] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(emptyForm);
 
@@ -988,8 +989,30 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setIsCompactHeader(window.scrollY > 90);
-    window.addEventListener("scroll", handleScroll);
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (ticking) return;
+
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+
+        // Histeresis amplia para evitar parpadeo cuando cambia el alto del header.
+        // Si el usuario baja con filtros abiertos, cerramos filtros para que el alto
+        // de la cabecera no cambie repetidamente durante el scroll.
+        if (scrollY > 360) {
+          setShowFilters(false);
+          setIsCompactHeader(true);
+        } else if (scrollY < 70) {
+          setIsCompactHeader(false);
+        }
+
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -1035,6 +1058,7 @@ export default function App() {
 
   const resetFilters = () => {
     setQuery("");
+    setIsSearchOpen(false);
     setOnlyPlayable(true);
     setTypeFilter("Todos");
     setModeFilter("Todos");
@@ -1548,13 +1572,13 @@ export default function App() {
         onConfirm={confirmDeleteGame}
       />
       <div className="mx-auto min-h-screen w-full max-w-6xl bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 lg:px-6 ${isCompactHeader ? "pb-3 pt-3" : "pb-5 pt-5"}`}>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <D12Logo compact={isCompactHeader} />
-              <div>
-                <h1 translate="no" className={`notranslate font-black text-white transition-all ${isCompactHeader ? "text-xl" : "text-2xl"}`}>{APP_NAME}</h1>
-                {!isCompactHeader && <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{APP_SUBTITLE}</p>}
+        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/92 px-4 backdrop-blur-xl transition-all duration-300 lg:px-6 ${isCompactHeader ? "pb-1.5 pt-1.5" : "pb-2.5 pt-2.5"}`}>
+          <div className={`flex items-center justify-between gap-3 transition-all ${isCompactHeader ? "py-1" : "py-2"}`}>
+            <div className="flex min-w-0 items-center gap-3">
+              <D12Logo compact={true} />
+              <div className="min-w-0">
+                <h1 translate="no" className={`notranslate truncate font-black text-white transition-all ${isCompactHeader ? "text-lg sm:text-xl" : "text-2xl"}`}>{APP_NAME}</h1>
+                {!isCompactHeader && <p className="text-[10px] font-black uppercase tracking-wide text-emerald-300">{APP_SUBTITLE}</p>}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -1565,7 +1589,7 @@ export default function App() {
               ) : user ? (
                 <button
                   onClick={logout}
-                  className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-black text-emerald-200"
+                  className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-black text-emerald-200 transition hover:border-emerald-300/50"
                   title={user.email || "Usuario logueado"}
                 >
                   Salir
@@ -1578,93 +1602,139 @@ export default function App() {
                   Google
                 </button>
               )}
-
-              <DragonCornerIcon compact={isCompactHeader} />
+              {!isCompactHeader && <DragonCornerIcon compact={true} />}
             </div>
           </div>
 
-          <div className={`grid grid-cols-1 gap-3 transition-all duration-300 lg:grid-cols-[0.9fr_1.4fr] ${isCompactHeader ? "mt-3" : "mt-5"}`}>
-            <div className={`rounded-[1.7rem] border border-emerald-400/25 bg-slate-900/80 text-center shadow-lg shadow-emerald-950/20 transition-all ${isCompactHeader ? "p-1.5" : "p-2"}`}>
-              {!isCompactHeader && <p className="text-[10px] font-bold uppercase text-emerald-200">Participantes</p>}
-              <div className="flex items-center justify-center gap-2">
-                <button onClick={() => setPlayers((p) => Math.max(1, p - 1))} className="rounded-full bg-slate-800 p-2 text-white">
-                  <Minus size={15} />
-                </button>
-                <span className={`w-8 text-center font-black transition-all ${isCompactHeader ? "text-xl" : "text-2xl"}`}>{players}</span>
-                <button onClick={() => setPlayers((p) => p + 1)} className="rounded-full bg-emerald-400 p-2 text-slate-950">
-                  <Plus size={15} />
-                </button>
-              </div>
-            </div>
-
-            <div className="relative">
-              <Search className="absolute left-3 top-4 h-4 w-4 text-cyan-200" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar juego..." className={`w-full rounded-3xl border border-cyan-400/25 bg-slate-900/80 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 outline-none transition-all focus:ring-2 focus:ring-emerald-300 ${isCompactHeader ? "h-11" : "h-full min-h-[58px]"}`} />
-            </div>
-          </div>
-
-          <div className={`rounded-[1.7rem] border border-cyan-400/20 bg-gradient-to-r from-slate-950/75 via-slate-900/70 to-cyan-950/30 p-3 shadow-lg shadow-cyan-950/20 transition-all duration-300 ${isCompactHeader ? "mt-3" : "mt-4"}`}>
-            <button type="button" onClick={() => setShowFilters((value) => !value)} className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
-                  <SlidersHorizontal size={18} />
+          {!isCompactHeader && (
+            <div className="mt-2.5 space-y-2">
+              <div className="grid gap-2 lg:grid-cols-[0.95fr_1.55fr_auto] lg:items-stretch">
+                <div className="flex items-center justify-between gap-3 rounded-[1.5rem] border border-emerald-400/25 bg-slate-950/55 px-3 py-2.5 shadow-lg shadow-emerald-950/10">
+                  <div className="text-left">
+                    <p className="text-[10px] font-black uppercase tracking-wide text-emerald-200">Participantes</p>
+                    <p className="text-[11px] font-semibold text-slate-500">Filtra jugables</p>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <button onClick={() => setPlayers((p) => Math.max(1, p - 1))} className="rounded-full bg-slate-800 p-2 text-white transition hover:bg-slate-700">
+                      <Minus size={15} />
+                    </button>
+                    <span className="w-8 text-center text-2xl font-black text-white">{players}</span>
+                    <button onClick={() => setPlayers((p) => p + 1)} className="rounded-full bg-emerald-400 p-2 text-slate-950 transition hover:bg-emerald-300">
+                      <Plus size={15} />
+                    </button>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-sm font-black text-white">Filtros</p>
-                  {!isCompactHeader && (
-                    <div className="mt-1 flex flex-wrap gap-1.5">
-                      {activeFilterChips.map((chip) => (
-                        <span key={chip} className="rounded-full border border-cyan-400/20 bg-slate-900/80 px-2 py-0.5 text-[10px] font-black text-cyan-100">
-                          {chip}
-                        </span>
-                      ))}
+
+                <button type="button" onClick={() => setShowFilters((value) => !value)} className="flex items-center justify-between gap-3 rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/55 px-3 py-2.5 shadow-lg shadow-cyan-950/10 transition hover:border-emerald-300/40">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
+                      <SlidersHorizontal size={18} />
                     </div>
-                  )}
-                </div>
-              </div>
-              <div className="rounded-full bg-slate-800 p-2 text-slate-200">
-                {showFilters ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
-              </div>
-            </button>
+                    <div className="min-w-0 text-left">
+                      <p className="text-sm font-black text-white">Filtros</p>
+                      <div className="mt-0.5 flex max-w-full flex-wrap gap-1">
+                        {activeFilterChips.slice(0, 2).map((chip) => (
+                          <span key={chip} className="rounded-full border border-cyan-400/20 bg-slate-900/80 px-2 py-0.5 text-[9px] font-black text-cyan-100">
+                            {chip}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-full bg-slate-800 p-2 text-slate-200">
+                    {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                </button>
 
-            {showFilters && (
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">Disponibilidad</span>
-                  <button type="button" onClick={() => setOnlyPlayable((v) => !v)} className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${onlyPlayable ? "bg-emerald-400 text-slate-950" : "border border-slate-700 bg-slate-900 text-slate-100"}`}>
-                    <Filter size={15} />
-                    {onlyPlayable ? "Jugables" : "Todos"}
-                  </button>
-                </label>
-
-                <LabeledSelect label="Tipo" value={typeFilter} onChange={setTypeFilter} options={typeOptions} />
-                <LabeledSelect label="Duración" value={timeFilter} onChange={setTimeFilter} options={timeOptions} />
-                <LabeledSelect label="Modo" value={modeFilter} onChange={setModeFilter} options={modeOptions} />
                 <button
                   type="button"
-                  onClick={resetFilters}
-                  className="col-span-2 flex h-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-sm font-black text-slate-200 transition hover:border-emerald-400/40 hover:text-emerald-200"
+                  onClick={() => setIsSearchOpen((value) => !value)}
+                  className="flex h-full min-h-[58px] w-full items-center justify-center px-1 transition lg:w-[52px]"
+                  aria-label="Buscar juego"
+                  title="Buscar juego"
                 >
-                  Limpiar filtros
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-2xl text-slate-950 transition ${
+                      isSearchOpen || query
+                        ? "bg-emerald-300 shadow-lg shadow-emerald-950/20"
+                        : "bg-emerald-400 hover:bg-emerald-300"
+                    }`}
+                  >
+                    <Search size={18} />
+                  </div>
                 </button>
               </div>
-            )}
-          </div>
+
+              {(isSearchOpen || query) && (
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-200" />
+                  <input
+                    autoFocus
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Buscar juego..."
+                    className="h-11 w-full rounded-[1.5rem] border border-cyan-400/25 bg-slate-950/70 pl-11 pr-14 text-sm font-semibold text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-300 focus:ring-2 focus:ring-emerald-300/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery("");
+                      setIsSearchOpen(false);
+                    }}
+                    className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-2xl bg-slate-800 text-sm font-black text-slate-300 transition hover:bg-slate-700 hover:text-white"
+                    aria-label="Cerrar búsqueda"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {showFilters && (
+                <div className="grid grid-cols-2 gap-3 rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/70 p-3 shadow-lg shadow-cyan-950/10">
+                  <label className="block">
+                    <span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-slate-400">Disponibilidad</span>
+                    <button type="button" onClick={() => setOnlyPlayable((v) => !v)} className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black transition ${onlyPlayable ? "bg-emerald-400 text-slate-950" : "border border-slate-700 bg-slate-900 text-slate-100"}`}>
+                      <Filter size={15} />
+                      {onlyPlayable ? "Jugables" : "Todos"}
+                    </button>
+                  </label>
+                  <LabeledSelect label="Tipo" value={typeFilter} onChange={setTypeFilter} options={typeOptions} />
+                  <LabeledSelect label="Duración" value={timeFilter} onChange={setTimeFilter} options={timeOptions} />
+                  <LabeledSelect label="Modo" value={modeFilter} onChange={setModeFilter} options={modeOptions} />
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="col-span-2 flex h-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-sm font-black text-slate-200 transition hover:border-emerald-400/40 hover:text-emerald-200"
+                  >
+                    Limpiar filtros
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-
         <main className="p-4 lg:p-6">
-          <div className="overflow-hidden rounded-[2rem] border border-emerald-300/25 bg-gradient-to-br from-emerald-300 via-cyan-300 to-teal-400 p-5 text-slate-950 shadow-2xl shadow-emerald-950/25">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold opacity-80">Disponibles ahora</p>
-                <p className="text-4xl font-black">{visibleGames.length} juegos</p>
-                <p className="mt-1 text-xs font-black opacity-70">de {screen === "favorites" ? effectiveFavs.length : games.length} en tu lista</p>
-              </div>
-              <Trophy className="h-12 w-12 opacity-80" />
-            </div>            
-            <p className="mt-2 text-xs font-semibold opacity-80">{screen === "favorites"? `Mostrando favoritos para ${players} jugadores`: `Filtrando para ${players} participantes. Tocá un juego para ver preparación y cómo jugar.`}</p>
+          <div className="flex flex-col gap-2 rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/55 px-4 py-3 text-slate-100 shadow-lg shadow-cyan-950/10 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-300">Quest log</p>
+              <p className="mt-0.5 text-lg font-black text-white lg:text-xl">
+                {visibleGames.length} juegos disponibles
+              </p>
+            </div>
+            <p className="text-xs font-semibold text-slate-400">
+              {screen === "favorites"
+                ? `Favoritos compatibles para ${players} participantes.`
+                : `Filtrando para ${players} participantes.`}
+            </p>
+            <div className="flex gap-2">
+              <span className="rounded-2xl border border-emerald-400/25 bg-emerald-400/10 px-3 py-2 text-xs font-black text-emerald-200">
+                {visibleGames.length} visibles
+              </span>
+              <span className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-black text-cyan-200">
+                {screen === "favorites" ? effectiveFavs.length : games.length} en lista
+              </span>
+            </div>
           </div>
-
           {deleteNotice && (
             <div className="rounded-3xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-100">
               <div className="flex items-center justify-between gap-3">
