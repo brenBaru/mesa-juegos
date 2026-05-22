@@ -643,6 +643,53 @@ function TextAreaField({ label, value, onChange, placeholder }) {
   );
 }
 
+function ToastMessage({ toast }) {
+  if (!toast) return null;
+
+  return (
+    <div className="fixed left-1/2 top-4 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-emerald-400/35 bg-slate-950/95 px-4 py-3 text-sm font-bold text-emerald-100 shadow-2xl backdrop-blur-xl">
+      {toast.message}
+    </div>
+  );
+}
+
+function DeleteConfirmModal({ game, onCancel, onConfirm }) {
+  if (!game) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-[2rem] border border-red-400/30 bg-slate-950 p-5 text-slate-100 shadow-2xl">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/15 text-red-200">
+            <Trash2 size={22} />
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-white">Borrar juego</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Vas a borrar <b>{game.name}</b> de tu listado. Esta acción también lo quita de favoritos.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <button
+            onClick={onCancel}
+            className="rounded-2xl border border-slate-700 bg-slate-900 px-3 py-3 text-sm font-black text-slate-200"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white"
+          >
+            Sí, borrar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function readValue(item, keys, fallback = "") {
   for (const key of keys) {
     if (item[key] !== undefined && item[key] !== null && item[key] !== "") {
@@ -756,6 +803,9 @@ export default function App() {
   const [cloudGames, setCloudGames] = useState([]);
   const [cloudFavs, setCloudFavs] = useState([]);
   const [cloudLoading, setCloudLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleteNotice, setDeleteNotice] = useState(null);
   const [query, setQuery] = useState("");
   const [onlyPlayable, setOnlyPlayable] = useState(true);
   const [typeFilter, setTypeFilter] = useState("Todos");
@@ -968,20 +1018,37 @@ export default function App() {
     await saveFavsToFirestore(user.uid, nextFavs);
   };
 
-  const deleteCustomGame = async (id) => {
+  const showToast = (message) => {
+    setToast({ message });
+    window.setTimeout(() => setToast(null), 2800);
+  };
+
+  const requestDeleteGame = (game) => {
+    setPendingDelete(game);
+  };
+
+  const confirmDeleteGame = async () => {
+    if (!pendingDelete) return;
+
+    const deletedId = pendingDelete.id;
+    const deletedName = pendingDelete.name;
+
     if (user) {
-      await deleteGame(user.uid, id);
+      await deleteGame(user.uid, deletedId);
       await saveFavsToFirestore(
         user.uid,
-        effectiveFavs.filter((fav) => fav !== id)
+        effectiveFavs.filter((fav) => fav !== deletedId)
       );
     } else {
-      setCustomGames((prev) => prev.filter((game) => game.id !== id));
-      setFavs((prev) => prev.filter((fav) => fav !== id));
+      setCustomGames((prev) => prev.filter((game) => game.id !== deletedId));
+      setFavs((prev) => prev.filter((fav) => fav !== deletedId));
     }
 
+    setPendingDelete(null);
     setSelected(null);
     setScreen("home");
+    setDeleteNotice({ name: deletedName });
+    showToast(`Se borró ${deletedName} del listado.`);
   };
 
   const searchGames = (query) => {
@@ -1011,6 +1078,12 @@ export default function App() {
 
     return (
       <div className="min-h-screen bg-[#031313] text-slate-100">
+        <ToastMessage toast={toast} />
+        <DeleteConfirmModal
+          game={pendingDelete}
+          onCancel={() => setPendingDelete(null)}
+          onConfirm={confirmDeleteGame}
+        />
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
             <button onClick={() => { setScreen("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
@@ -1111,7 +1184,7 @@ export default function App() {
             </section>
 
             {selected.custom && (
-              <button onClick={() => deleteCustomGame(selected.id)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white">
+              <button onClick={() => requestDeleteGame(selected)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-3 py-3 text-sm font-black text-white">
                 <Trash2 size={16} />
                 Borrar juego agregado
               </button>
@@ -1129,6 +1202,7 @@ export default function App() {
   if (screen === "import") {
     return (
       <div className="min-h-screen bg-[#031313] text-slate-100">
+        <ToastMessage toast={toast} />
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-6 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
             <button
@@ -1246,6 +1320,7 @@ export default function App() {
 
                         setSelected(newGame);
                         setScreen("detail");
+                        showToast("Juego importado correctamente.");
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       className={`shrink-0 rounded-xl px-3 py-1 text-xs font-black ${
@@ -1268,6 +1343,7 @@ export default function App() {
   if (screen === "add") {
     return (
       <div className="min-h-screen bg-[#031313] text-slate-100">
+        <ToastMessage toast={toast} />
         <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
           <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
             <button onClick={() => setScreen("home")} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
@@ -1320,6 +1396,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#031313] text-slate-100">
+      <ToastMessage toast={toast} />
+      <DeleteConfirmModal
+        game={pendingDelete}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={confirmDeleteGame}
+      />
       <div className="mx-auto min-h-screen max-w-md bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
         <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 backdrop-blur-xl transition-all duration-300 ${isCompactHeader ? "pb-3 pt-3" : "pb-4 pt-4"}`}>
           <div className="flex items-center justify-between gap-3">
@@ -1421,6 +1503,23 @@ export default function App() {
             </div>            
             <p className="mt-2 text-xs font-semibold opacity-80">{screen === "favorites"? `Mostrando favoritos para ${players} jugadores`: `Filtrando para ${players} participantes. Tocá un juego para ver preparación y cómo jugar.`}</p>
           </div>
+
+          {deleteNotice && (
+            <div className="rounded-3xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+              <div className="flex items-center justify-between gap-3">
+                <span>
+                  <b>{deleteNotice.name}</b> se borró correctamente del listado.
+                </span>
+                <button
+                  onClick={() => setDeleteNotice(null)}
+                  className="rounded-full bg-slate-900/70 px-3 py-1 text-xs font-black text-emerald-200"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
+
           {visibleGames.length === 0 && <div className="rounded-3xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-300">No hay juegos con esos filtros.</div>}
           {visibleGames.map((game) => {
             const canPlay = playable(game);
