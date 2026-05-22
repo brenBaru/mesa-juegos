@@ -1791,26 +1791,26 @@ export default function App() {
       <div translate="no" className="notranslate min-h-screen bg-[#031313] text-slate-100">
         <ToastMessage toast={toast} />
         <div className="mx-auto min-h-screen w-full max-w-6xl bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-4 py-4 backdrop-blur-xl lg:px-6">
+          <div className="sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/90 px-3 py-3 backdrop-blur-xl sm:px-4 lg:px-6">
             <button onClick={() => setScreen("home")} className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm font-bold text-emerald-300">
               <ArrowLeft size={16} />
               Volver
             </button>
 
-            <div className="mt-5 rounded-[2rem] border border-cyan-400/20 bg-slate-950/45 p-5 shadow-xl shadow-cyan-950/20">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Nuevo juego</p>
-              <h1 className="mt-2 text-3xl font-black text-white">Agregar juego</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+            <div className="mt-3 rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/45 p-4 shadow-xl shadow-cyan-950/20 sm:mt-5 sm:rounded-[2rem] sm:p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-300 sm:text-xs sm:tracking-[0.22em]">Nuevo juego</p>
+              <h1 className="mt-1 text-2xl font-black text-white sm:mt-2 sm:text-3xl">Agregar juego</h1>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-300 sm:mt-2 sm:text-sm sm:leading-6">
                 Cargá un juego manualmente, importalo desde el catálogo o dejá preparada una guía rápida para explicar la partida.
               </p>
             </div>
           </div>
 
-          <main className="grid gap-4 p-4 lg:grid-cols-[0.8fr_1.2fr] lg:p-6">
+          <main className="grid gap-3 p-3 sm:gap-4 sm:p-4 lg:grid-cols-[0.8fr_1.2fr] lg:p-6">
             <aside className="space-y-4">
               <button
                 onClick={() => setScreen("import")}
-                className="flex w-full items-center justify-center gap-2 rounded-3xl bg-cyan-400 px-3 py-4 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/25"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-3 py-3 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/25 sm:rounded-3xl sm:py-4"
               >
                 Importar desde catálogo
               </button>
@@ -1825,7 +1825,7 @@ export default function App() {
               </div>
             </aside>
 
-            <section className="space-y-4 rounded-[2rem] border border-slate-700/80 bg-slate-950/65 p-4 shadow-2xl shadow-slate-950/30 lg:p-5">
+            <section className="space-y-3 rounded-[1.5rem] border border-slate-700/80 bg-slate-950/65 p-3 shadow-2xl shadow-slate-950/30 sm:space-y-4 sm:rounded-[2rem] sm:p-4 lg:p-5">
               <div className="grid gap-3 lg:grid-cols-2">
                 <Field label="Nombre del juego" value={form.name} onChange={(value) => setForm({ ...form, name: value })} placeholder="Ej: Codenames" />
                 <Field label="Edad sugerida" value={form.age} onChange={(value) => setForm({ ...form, age: value })} placeholder="Ej: 10+" />
@@ -1876,13 +1876,13 @@ export default function App() {
         onConfirm={confirmDeleteGame}
       />
       <div className="mx-auto min-h-screen w-full max-w-6xl bg-[radial-gradient(circle_at_top_left,#0f766e_0,#062b2e_32%,#020617_75%)] pb-24 shadow-2xl">
-        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/92 px-4 backdrop-blur-xl transition-all duration-300 lg:px-6 ${isCompactHeader ? "pb-1.5 pt-1.5" : "pb-2.5 pt-2.5"}`}>
+        <div className={`sticky top-0 z-20 border-b border-cyan-400/20 bg-slate-950/92 px-3 backdrop-blur-xl transition-all duration-300 sm:px-4 lg:px-6 ${isCompactHeader ? "pb-1.5 pt-1.5" : "pb-2 pt-2 lg:pb-2.5 lg:pt-2.5"}`}>
           <div className={`flex items-center justify-between gap-3 transition-all ${isCompactHeader ? "py-1" : "py-2"}`}>
             <div className="flex min-w-0 items-center gap-3">
               <D12Logo compact={true} />
               <div className="min-w-0">
-                <h1 translate="no" className={`notranslate truncate font-black text-white transition-all ${isCompactHeader ? "text-lg sm:text-xl" : "text-2xl"}`}>{APP_NAME}</h1>
-                {!isCompactHeader && <p className="text-[10px] font-black uppercase tracking-wide text-emerald-300">{APP_SUBTITLE}</p>}
+                <h1 translate="no" className={`notranslate truncate font-black text-white transition-all ${isCompactHeader ? "text-base sm:text-xl" : "text-xl sm:text-2xl"}`}>{APP_NAME}</h1>
+                {!isCompactHeader && <p className="hidden text-[10px] font-black uppercase tracking-wide text-emerald-300 sm:block">{APP_SUBTITLE}</p>}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -1906,32 +1906,32 @@ export default function App() {
                   Google
                 </button>
               )}
-              {!isCompactHeader && <DragonCornerIcon compact={true} />}
+              {!isCompactHeader && <div className="hidden sm:block"><DragonCornerIcon compact={true} /></div>}
             </div>
           </div>
 
           {!isCompactHeader && (
-            <div className="mt-2.5 space-y-2">
-              <div className="grid gap-2 lg:grid-cols-[0.95fr_1.55fr_auto] lg:items-stretch">
-                <div className="flex items-center justify-between gap-3 rounded-[1.5rem] border border-emerald-400/25 bg-slate-950/55 px-3 py-2.5 shadow-lg shadow-emerald-950/10">
+            <div className="mt-2 space-y-2">
+              <div className="grid grid-cols-[1fr_auto] gap-2 lg:grid-cols-[0.95fr_1.55fr_auto] lg:items-stretch">
+                <div className="order-1 flex min-h-[54px] items-center justify-between gap-3 rounded-[1.35rem] border border-emerald-400/25 bg-slate-950/55 px-3 py-2 shadow-lg shadow-emerald-950/10 lg:rounded-[1.5rem] lg:py-2.5">
                   <div className="text-left">
                     <p className="text-[10px] font-black uppercase tracking-wide text-emerald-200">Participantes</p>
-                    <p className="text-[11px] font-semibold text-slate-500">Filtra jugables</p>
+                    <p className="hidden text-[11px] font-semibold text-slate-500 sm:block">Filtra jugables</p>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <button onClick={() => setPlayers((p) => Math.max(1, p - 1))} className="rounded-full bg-slate-800 p-2 text-white transition hover:bg-slate-700">
                       <Minus size={15} />
                     </button>
-                    <span className="w-8 text-center text-2xl font-black text-white">{players}</span>
+                    <span className="w-7 text-center text-xl font-black text-white sm:w-8 sm:text-2xl">{players}</span>
                     <button onClick={() => setPlayers((p) => p + 1)} className="rounded-full bg-emerald-400 p-2 text-slate-950 transition hover:bg-emerald-300">
                       <Plus size={15} />
                     </button>
                   </div>
                 </div>
 
-                <button type="button" onClick={() => setShowFilters((value) => !value)} className="flex items-center justify-between gap-3 rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/55 px-3 py-2.5 shadow-lg shadow-cyan-950/10 transition hover:border-emerald-300/40">
+                <button type="button" onClick={() => setShowFilters((value) => !value)} className="order-3 col-span-2 flex min-h-[54px] items-center justify-between gap-3 rounded-[1.35rem] border border-cyan-400/20 bg-slate-950/55 px-3 py-2 shadow-lg shadow-cyan-950/10 transition hover:border-emerald-300/40 lg:order-2 lg:col-span-1 lg:rounded-[1.5rem] lg:py-2.5">
                   <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950 sm:h-10 sm:w-10">
                       <SlidersHorizontal size={18} />
                     </div>
                     <div className="min-w-0 text-left">
@@ -1953,7 +1953,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setIsSearchOpen((value) => !value)}
-                  className="flex h-full min-h-[58px] w-full items-center justify-center px-1 transition lg:w-[52px]"
+                  className="order-2 flex min-h-[54px] w-[54px] items-center justify-center px-1 transition lg:order-3 lg:min-h-[58px] lg:w-[52px]"
                   aria-label="Buscar juego"
                   title="Buscar juego"
                 >
@@ -1977,7 +1977,7 @@ export default function App() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Buscar juego..."
-                    className="h-11 w-full rounded-[1.5rem] border border-cyan-400/25 bg-slate-950/70 pl-11 pr-14 text-sm font-semibold text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-300 focus:ring-2 focus:ring-emerald-300/40"
+                    className="h-10 w-full rounded-[1.35rem] border border-cyan-400/25 bg-slate-950/70 pl-11 pr-14 text-sm font-semibold text-white placeholder:text-slate-500 outline-none transition-all focus:border-emerald-300 focus:ring-2 focus:ring-emerald-300/40 lg:h-11 lg:rounded-[1.5rem]"
                   />
                   <button
                     type="button"
@@ -2017,24 +2017,24 @@ export default function App() {
             </div>
           )}
         </div>
-        <main className="p-4 lg:p-6">
-          <div className="flex flex-col gap-2 rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/55 px-4 py-3 text-slate-100 shadow-lg shadow-cyan-950/10 lg:flex-row lg:items-center lg:justify-between">
+        <main className="p-3 sm:p-4 lg:p-6">
+          <div className="flex flex-col gap-2 rounded-[1.35rem] border border-cyan-400/20 bg-slate-950/55 px-3 py-3 text-slate-100 shadow-lg shadow-cyan-950/10 sm:px-4 lg:flex-row lg:items-center lg:justify-between lg:rounded-[1.5rem]">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-300">Quest log</p>
-              <p className="mt-0.5 text-lg font-black text-white lg:text-xl">
+              <p className="mt-0.5 text-base font-black text-white sm:text-lg lg:text-xl">
                 {visibleGames.length} juegos disponibles
               </p>
             </div>
-            <p className="text-xs font-semibold text-slate-400">
+            <p className="text-[11px] font-semibold text-slate-400 sm:text-xs">
               {screen === "favorites"
                 ? `Favoritos compatibles para ${players} participantes.`
                 : `Filtrando para ${players} participantes.`}
             </p>
-            <div className="flex gap-2">
-              <span className="rounded-2xl border border-emerald-400/25 bg-emerald-400/10 px-3 py-2 text-xs font-black text-emerald-200">
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-2xl border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1.5 text-[11px] font-black text-emerald-200 sm:px-3 sm:py-2 sm:text-xs">
                 {visibleGames.length} visibles
               </span>
-              <span className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-black text-cyan-200">
+              <span className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-2.5 py-1.5 text-[11px] font-black text-cyan-200 sm:px-3 sm:py-2 sm:text-xs">
                 {screen === "favorites" ? effectiveFavs.length : games.length} en lista
               </span>
             </div>
@@ -2077,14 +2077,14 @@ export default function App() {
               </button>
             </div>
           )}
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {visibleGames.map((game) => {
               const canPlay = playable(game);
             return (
               <button
                 key={game.id}
                 onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                className={`group min-h-[188px] w-full rounded-[2rem] border p-4 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-2xl active:scale-[0.99] ${
+                className={`group min-h-[160px] w-full rounded-[1.7rem] border p-4 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-2xl active:scale-[0.99] sm:min-h-[188px] sm:rounded-[2rem] ${
                   canPlay
                     ? "border-slate-700/80 bg-slate-900/90 hover:border-emerald-400/40 hover:shadow-emerald-950/20"
                     : "border-red-400/20 bg-slate-950/80 opacity-80 hover:border-red-300/30"
