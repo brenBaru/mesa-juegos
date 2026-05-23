@@ -17,7 +17,7 @@ import { AddGameScreen } from "./screens/AddGameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { timeLabel } from "./utils/gameUtils";
 import { normalizeCatalogGame } from "./utils/catalogUtils";
-import { getRecommendedGames } from "./utils/recommendationUtils";
+import { getRecommendedGames, getRecommendationKey } from "./utils/recommendationUtils";
 
 export default function App() {
   const [screen, setScreen] = useState("home");
@@ -72,6 +72,19 @@ export default function App() {
   const [importLoading, setImportLoading] = useState(false);
   const [catalog, setCatalog] = useState([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [recommendationFeedback, setRecommendationFeedback] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("mesa-juegos-recommendation-feedback")) || {
+        hidden: [],
+        boosted: []
+      };
+    } catch {
+      return {
+        hidden: [],
+        boosted: []
+      };
+    }
+  });
 
   const effectiveCustomGames = user ? cloudGames : customGames;
   const effectiveFavs = user ? cloudFavs : favs;
@@ -192,6 +205,10 @@ export default function App() {
     }
   }, [customGames, user]);
 
+  useEffect(() => {
+    localStorage.setItem("mesa-juegos-recommendation-feedback", JSON.stringify(recommendationFeedback));
+  }, [recommendationFeedback]);
+
   const playable = (game) => players >= Number(game.min) && players <= Number(game.max);
 
   const visibleGames = useMemo(() => {
@@ -210,9 +227,11 @@ export default function App() {
       games,
       catalog,
       favoriteIds: effectiveFavs,
-      players
+      players,
+      hiddenRecommendationKeys: recommendationFeedback.hidden,
+      boostedRecommendationKeys: recommendationFeedback.boosted
     });
-  }, [games, catalog, effectiveFavs, players]);
+  }, [games, catalog, effectiveFavs, players, recommendationFeedback]);
 
   const setupPlaceholder = [
     "Un paso por línea.",
@@ -470,6 +489,28 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const hideRecommendation = (game) => {
+    const key = getRecommendationKey(game);
+    if (!key) return;
+
+    setRecommendationFeedback((prev) => ({
+      hidden: prev.hidden.includes(key) ? prev.hidden : [...prev.hidden, key],
+      boosted: prev.boosted.filter((item) => item !== key)
+    }));
+    showToast("Ocultamos esta sugerencia.");
+  };
+
+  const boostRecommendation = (game) => {
+    const key = getRecommendationKey(game);
+    if (!key) return;
+
+    setRecommendationFeedback((prev) => ({
+      hidden: prev.hidden.filter((item) => item !== key),
+      boosted: prev.boosted.includes(key) ? prev.boosted : [...prev.boosted, key]
+    }));
+    showToast("Vamos a mostrar más sugerencias similares.");
+  };
+
   const searchGames = (query) => {
     if (!query.trim() || query.length < 3) {
       setImportResults([]);
@@ -605,6 +646,8 @@ export default function App() {
       visibleGames={visibleGames}
       recommendedGames={recommendedGames}
       onImportSuggestedGame={importSuggestedGame}
+      onHideRecommendation={hideRecommendation}
+      onBoostRecommendation={boostRecommendation}
       deleteNotice={deleteNotice}
       setDeleteNotice={setDeleteNotice}
       screen={screen}

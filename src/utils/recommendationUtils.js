@@ -50,43 +50,43 @@ function addReason(reasons, reason) {
   }
 }
 
-function gameKey(game) {
-  return normalizeText(game.name || game.id);
+export function getRecommendationKey(game) {
+  return normalizeText(game?.name || game?.id || "");
 }
 
-function scoreCandidate(candidate, favorites, players) {
+function scoreCandidate(candidate, profileGames, players) {
   let score = 0;
   const reasons = [];
   const candidateTokens = new Set(vibeTokens(candidate));
 
-  favorites.forEach((favorite) => {
-    if (candidate.type && favorite.type && candidate.type === favorite.type) {
+  profileGames.forEach((profileGame) => {
+    if (candidate.type && profileGame.type && candidate.type === profileGame.type) {
       score += 3;
       addReason(reasons, "tipo");
     }
 
-    if (candidate.mode && favorite.mode && candidate.mode === favorite.mode) {
+    if (candidate.mode && profileGame.mode && candidate.mode === profileGame.mode) {
       score += 2;
       addReason(reasons, "modo");
     }
 
-    const timeDifference = Math.abs(timeAverage(candidate) - timeAverage(favorite));
+    const timeDifference = Math.abs(timeAverage(candidate) - timeAverage(profileGame));
     if (timeDifference <= 15) {
       score += 2;
       addReason(reasons, "duración");
     }
 
-    if (candidate.level && favorite.level && candidate.level === favorite.level) {
+    if (candidate.level && profileGame.level && candidate.level === profileGame.level) {
       score += 1;
       addReason(reasons, "dificultad");
     }
 
-    if (rangesOverlap(candidate.min, candidate.max, favorite.min, favorite.max)) {
+    if (rangesOverlap(candidate.min, candidate.max, profileGame.min, profileGame.max)) {
       score += 1;
       addReason(reasons, "cantidad de jugadores");
     }
 
-    const sharedWords = vibeTokens(favorite).filter((word) => candidateTokens.has(word));
+    const sharedWords = vibeTokens(profileGame).filter((word) => candidateTokens.has(word));
     if (sharedWords.length > 0) {
       score += Math.min(2, sharedWords.length);
       addReason(reasons, "estilo de juego");
@@ -104,26 +104,37 @@ function scoreCandidate(candidate, favorites, players) {
   };
 }
 
-export function getRecommendedGames({ games, catalog = [], favoriteIds, players, limit = 6 }) {
+export function getRecommendedGames({
+  games,
+  catalog = [],
+  favoriteIds,
+  players,
+  limit = 6,
+  hiddenRecommendationKeys = [],
+  boostedRecommendationKeys = []
+}) {
   if (!Array.isArray(games) || !Array.isArray(favoriteIds) || favoriteIds.length === 0) {
     return [];
   }
 
   const favoriteIdSet = new Set(favoriteIds);
+  const hiddenKeySet = new Set(hiddenRecommendationKeys);
+  const boostedKeySet = new Set(boostedRecommendationKeys);
   const favorites = games.filter((game) => favoriteIdSet.has(game.id));
 
   if (favorites.length === 0) {
     return [];
   }
 
-  const favoriteNameSet = new Set(favorites.map(gameKey));
-  const libraryNameSet = new Set(games.map(gameKey));
+  const favoriteNameSet = new Set(favorites.map(getRecommendationKey));
+  const libraryNameSet = new Set(games.map(getRecommendationKey));
 
   const catalogCandidates = Array.isArray(catalog)
     ? catalog
         .filter((game) => game && game.name)
-        .filter((game) => !favoriteNameSet.has(gameKey(game)))
-        .filter((game) => !libraryNameSet.has(gameKey(game)))
+        .filter((game) => !favoriteNameSet.has(getRecommendationKey(game)))
+        .filter((game) => !libraryNameSet.has(getRecommendationKey(game)))
+        .filter((game) => !hiddenKeySet.has(getRecommendationKey(game)))
         .map((game) => ({
           ...game,
           custom: true,
@@ -133,17 +144,25 @@ export function getRecommendedGames({ games, catalog = [], favoriteIds, players,
 
   const libraryCandidates = games
     .filter((game) => !favoriteIdSet.has(game.id))
+    .filter((game) => !hiddenKeySet.has(getRecommendationKey(game)))
     .map((game) => ({
       ...game,
       recommendationSource: "library"
     }));
 
+  const boostedProfileGames = [...catalogCandidates, ...libraryCandidates].filter((game) =>
+    boostedKeySet.has(getRecommendationKey(game))
+  );
+
+  const profileGames = [...favorites, ...boostedProfileGames];
+
   const rankedCatalog = catalogCandidates
     .map((candidate) => {
-      const result = scoreCandidate(candidate, favorites, players);
+      const result = scoreCandidate(candidate, profileGames, players);
+      const candidateKey = getRecommendationKey(candidate);
       return {
         ...candidate,
-        recommendationScore: result.score + 2,
+        recommendationScore: result.score + 2 + (boostedKeySet.has(candidateKey) ? 3 : 0),
         recommendationReasons: result.reasons
       };
     })
@@ -151,10 +170,11 @@ export function getRecommendedGames({ games, catalog = [], favoriteIds, players,
 
   const rankedLibrary = libraryCandidates
     .map((candidate) => {
-      const result = scoreCandidate(candidate, favorites, players);
+      const result = scoreCandidate(candidate, profileGames, players);
+      const candidateKey = getRecommendationKey(candidate);
       return {
         ...candidate,
-        recommendationScore: result.score,
+        recommendationScore: result.score + (boostedKeySet.has(candidateKey) ? 3 : 0),
         recommendationReasons: result.reasons
       };
     })

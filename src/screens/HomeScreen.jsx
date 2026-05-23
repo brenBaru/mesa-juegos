@@ -54,6 +54,8 @@ export function HomeScreen({
   visibleGames,
   recommendedGames = [],
   onImportSuggestedGame,
+  onHideRecommendation,
+  onBoostRecommendation,
   deleteNotice,
   setDeleteNotice,
   screen,
@@ -329,6 +331,11 @@ return (
               {recommendedGames.map((game) => {
                 const canPlay = playable(game);
                 const isCatalogSuggestion = game.recommendationSource === "catalog";
+                const displayVibe = isCatalogSuggestion
+                  ? String(game.vibe || "")
+                      .replace(/^Catálogo importado\s*·\s*/i, "Desde catálogo · ")
+                      .replace(/^Catalogo importado\s*·\s*/i, "Desde catálogo · ")
+                  : game.vibe;
                 const openSuggestion = () => {
                   if (isCatalogSuggestion && typeof onImportSuggestedGame === "function") {
                     onImportSuggestedGame(game);
@@ -343,7 +350,7 @@ return (
                   <button
                     key={`recommended-${game.recommendationSource || "library"}-${game.id}`}
                     onClick={openSuggestion}
-                    className="group w-full rounded-[1.5rem] border border-emerald-400/20 bg-slate-900/80 p-4 text-left shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:border-emerald-300/40 hover:shadow-emerald-950/20 active:scale-[0.99]"
+                    className="group flex w-full flex-col rounded-[1.5rem] border border-emerald-400/20 bg-slate-900/80 p-4 text-left shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:border-emerald-300/40 hover:shadow-emerald-950/20 active:scale-[0.99]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -353,7 +360,7 @@ return (
                             {isCatalogSuggestion ? "Catálogo" : "En lista"}
                           </span>
                         </div>
-                        <p className="mt-2 line-clamp-2 text-sm leading-5 text-slate-400">{game.vibe}</p>
+                        <p className="mt-2 line-clamp-2 text-sm leading-5 text-slate-400">{displayVibe}</p>
                       </div>
                       <span
                         onClick={(e) => {
@@ -384,11 +391,33 @@ return (
                       </p>
                     )}
 
-                    {isCatalogSuggestion && (
-                      <p className="mt-3 text-xs font-black uppercase tracking-wide text-cyan-200">
-                        Tocá para importar y ver detalle
-                      </p>
-                    )}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="rounded-2xl bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 transition group-hover:bg-emerald-300">
+                        {isCatalogSuggestion ? "Importar y ver detalle" : "Ver detalle"}
+                      </span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (typeof onBoostRecommendation === "function") {
+                            onBoostRecommendation(game);
+                          }
+                        }}
+                        className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-black text-cyan-100 transition hover:border-cyan-300/50"
+                      >
+                        Más como este
+                      </span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (typeof onHideRecommendation === "function") {
+                            onHideRecommendation(game);
+                          }
+                        }}
+                        className="rounded-2xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-xs font-black text-slate-300 transition hover:border-red-300/40 hover:text-red-200"
+                      >
+                        No me interesa
+                      </span>
+                    </div>
                   </button>
                 );
               })}
