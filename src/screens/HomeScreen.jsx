@@ -53,6 +53,7 @@ export function HomeScreen({
   resetFilters,
   visibleGames,
   recommendedGames = [],
+  onImportSuggestedGame,
   deleteNotice,
   setDeleteNotice,
   screen,
@@ -316,7 +317,7 @@ return (
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-300">Sugerencias</p>
                 <h2 className="mt-1 text-xl font-black text-white">También podrían gustarte</h2>
                 <p className="mt-1 text-sm leading-6 text-slate-400">
-                  Recomendaciones calculadas según tus favoritos actuales.
+                  Priorizamos juegos del catálogo que todavía no importaste, según tus favoritos actuales.
                 </p>
               </div>
               <span className="w-fit rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-black text-cyan-200">
@@ -327,21 +328,44 @@ return (
             <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {recommendedGames.map((game) => {
                 const canPlay = playable(game);
+                const isCatalogSuggestion = game.recommendationSource === "catalog";
+                const openSuggestion = () => {
+                  if (isCatalogSuggestion && typeof onImportSuggestedGame === "function") {
+                    onImportSuggestedGame(game);
+                    return;
+                  }
+                  setSelected(game);
+                  setScreen("detail");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                };
+
                 return (
                   <button
-                    key={`recommended-${game.id}`}
-                    onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    key={`recommended-${game.recommendationSource || "library"}-${game.id}`}
+                    onClick={openSuggestion}
                     className="group w-full rounded-[1.5rem] border border-emerald-400/20 bg-slate-900/80 p-4 text-left shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:border-emerald-300/40 hover:shadow-emerald-950/20 active:scale-[0.99]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h3 translate="no" className="notranslate text-base font-black leading-6 text-white transition group-hover:text-emerald-100">{game.name}</h3>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 translate="no" className="notranslate text-base font-black leading-6 text-white transition group-hover:text-emerald-100">{game.name}</h3>
+                          <span className={`rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${isCatalogSuggestion ? "border border-cyan-400/25 bg-cyan-400/10 text-cyan-200" : "border border-emerald-400/25 bg-emerald-400/10 text-emerald-200"}`}>
+                            {isCatalogSuggestion ? "Catálogo" : "En lista"}
+                          </span>
+                        </div>
                         <p className="mt-2 line-clamp-2 text-sm leading-5 text-slate-400">{game.vibe}</p>
                       </div>
                       <span
-                        onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isCatalogSuggestion && typeof onImportSuggestedGame === "function") {
+                            onImportSuggestedGame(game);
+                          } else {
+                            toggleFav(game.id);
+                          }
+                        }}
                         className="rounded-2xl bg-slate-800/90 p-2 transition group-hover:bg-slate-700"
-                        title="Agregar a favoritos"
+                        title={isCatalogSuggestion ? "Importar sugerencia" : "Agregar a favoritos"}
                       >
                         <StarOff className="h-5 w-5 text-slate-400" />
                       </span>
@@ -357,6 +381,12 @@ return (
                     {Array.isArray(game.recommendationReasons) && game.recommendationReasons.length > 0 && (
                       <p className="mt-3 rounded-2xl border border-slate-700/70 bg-slate-950/55 px-3 py-2 text-xs leading-5 text-slate-300">
                         Similar por: <span className="font-bold text-emerald-200">{game.recommendationReasons.join(", ")}</span>.
+                      </p>
+                    )}
+
+                    {isCatalogSuggestion && (
+                      <p className="mt-3 text-xs font-black uppercase tracking-wide text-cyan-200">
+                        Tocá para importar y ver detalle
                       </p>
                     )}
                   </button>

@@ -208,10 +208,11 @@ export default function App() {
   const recommendedGames = useMemo(() => {
     return getRecommendedGames({
       games,
+      catalog,
       favoriteIds: effectiveFavs,
       players
     });
-  }, [games, effectiveFavs, players]);
+  }, [games, catalog, effectiveFavs, players]);
 
   const setupPlaceholder = [
     "Un paso por línea.",
@@ -430,6 +431,45 @@ export default function App() {
     showToast(`Se borró ${deletedName} del listado.`);
   };
 
+  const importSuggestedGame = async (game) => {
+    if (!game) return;
+
+    const newGame = {
+      ...game,
+      custom: true,
+      videoUrl:
+        game.videoUrl ||
+        `https://www.youtube.com/results?search_query=${encodeURIComponent(
+          game.name + " juego de mesa como jugar"
+        )}`,
+      rulesUrl:
+        game.rulesUrl ||
+        `https://www.google.com/search?q=${encodeURIComponent(
+          game.name + " reglas juego de mesa"
+        )}`,
+      setup:
+        Array.isArray(game.setup) && game.setup.length
+          ? game.setup
+          : ["Preparación no disponible."],
+      howTo:
+        Array.isArray(game.howTo) && game.howTo.length
+          ? game.howTo
+          : ["Reglas no disponibles."],
+      playerSetups: Array.isArray(game.playerSetups) ? game.playerSetups : []
+    };
+
+    if (user) {
+      await upsertGame(user.uid, newGame);
+    } else {
+      setCustomGames((prev) => [newGame, ...prev]);
+    }
+
+    setSelected(newGame);
+    setScreen("detail");
+    showToast("Juego importado desde sugerencias.");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const searchGames = (query) => {
     if (!query.trim() || query.length < 3) {
       setImportResults([]);
@@ -564,6 +604,7 @@ export default function App() {
       resetFilters={resetFilters}
       visibleGames={visibleGames}
       recommendedGames={recommendedGames}
+      onImportSuggestedGame={importSuggestedGame}
       deleteNotice={deleteNotice}
       setDeleteNotice={setDeleteNotice}
       screen={screen}

@@ -50,71 +50,122 @@ function addReason(reasons, reason) {
   }
 }
 
-export function getRecommendedGames({ games, favoriteIds, players, limit = 6 }) {
+function gameKey(game) {
+  return normalizeText(game.name || game.id);
+}
+
+function scoreCandidate(candidate, favorites, players) {
+  let score = 0;
+  const reasons = [];
+  const candidateTokens = new Set(vibeTokens(candidate));
+
+  favorites.forEach((favorite) => {
+    if (candidate.type && favorite.type && candidate.type === favorite.type) {
+      score += 3;
+      addReason(reasons, "tipo");
+    }
+
+    if (candidate.mode && favorite.mode && candidate.mode === favorite.mode) {
+      score += 2;
+      addReason(reasons, "modo");
+    }
+
+    const timeDifference = Math.abs(timeAverage(candidate) - timeAverage(favorite));
+    if (timeDifference <= 15) {
+      score += 2;
+      addReason(reasons, "duración");
+    }
+
+    if (candidate.level && favorite.level && candidate.level === favorite.level) {
+      score += 1;
+      addReason(reasons, "dificultad");
+    }
+
+    if (rangesOverlap(candidate.min, candidate.max, favorite.min, favorite.max)) {
+      score += 1;
+      addReason(reasons, "cantidad de jugadores");
+    }
+
+    const sharedWords = vibeTokens(favorite).filter((word) => candidateTokens.has(word));
+    if (sharedWords.length > 0) {
+      score += Math.min(2, sharedWords.length);
+      addReason(reasons, "estilo de juego");
+    }
+  });
+
+  if (Number(players) >= Number(candidate.min) && Number(players) <= Number(candidate.max)) {
+    score += 1;
+    addReason(reasons, `compatible con ${players}`);
+  }
+
+  return {
+    score,
+    reasons: reasons.slice(0, 4)
+  };
+}
+
+export function getRecommendedGames({ games, catalog = [], favoriteIds, players, limit = 6 }) {
   if (!Array.isArray(games) || !Array.isArray(favoriteIds) || favoriteIds.length === 0) {
     return [];
   }
 
   const favoriteIdSet = new Set(favoriteIds);
   const favorites = games.filter((game) => favoriteIdSet.has(game.id));
-  const candidates = games.filter((game) => !favoriteIdSet.has(game.id));
 
-  if (favorites.length === 0 || candidates.length === 0) {
+  if (favorites.length === 0) {
     return [];
   }
 
-  return candidates
+  const favoriteNameSet = new Set(favorites.map(gameKey));
+  const libraryNameSet = new Set(games.map(gameKey));
+
+  const catalogCandidates = Array.isArray(catalog)
+    ? catalog
+        .filter((game) => game && game.name)
+        .filter((game) => !favoriteNameSet.has(gameKey(game)))
+        .filter((game) => !libraryNameSet.has(gameKey(game)))
+        .map((game) => ({
+          ...game,
+          custom: true,
+          recommendationSource: "catalog"
+        }))
+    : [];
+
+  const libraryCandidates = games
+    .filter((game) => !favoriteIdSet.has(game.id))
+    .map((game) => ({
+      ...game,
+      recommendationSource: "library"
+    }));
+
+  const rankedCatalog = catalogCandidates
     .map((candidate) => {
-      let score = 0;
-      const reasons = [];
-      const candidateTokens = new Set(vibeTokens(candidate));
-
-      favorites.forEach((favorite) => {
-        if (candidate.type && favorite.type && candidate.type === favorite.type) {
-          score += 3;
-          addReason(reasons, "tipo");
-        }
-
-        if (candidate.mode && favorite.mode && candidate.mode === favorite.mode) {
-          score += 2;
-          addReason(reasons, "modo");
-        }
-
-        const timeDifference = Math.abs(timeAverage(candidate) - timeAverage(favorite));
-        if (timeDifference <= 15) {
-          score += 2;
-          addReason(reasons, "duración");
-        }
-
-        if (candidate.level && favorite.level && candidate.level === favorite.level) {
-          score += 1;
-          addReason(reasons, "dificultad");
-        }
-
-        if (rangesOverlap(candidate.min, candidate.max, favorite.min, favorite.max)) {
-          score += 1;
-          addReason(reasons, "cantidad de jugadores");
-        }
-
-        const sharedWords = vibeTokens(favorite).filter((word) => candidateTokens.has(word));
-        if (sharedWords.length > 0) {
-          score += Math.min(2, sharedWords.length);
-          addReason(reasons, "estilo de juego");
-        }
-      });
-
-      if (Number(players) >= Number(candidate.min) && Number(players) <= Number(candidate.max)) {
-        score += 1;
-        addReason(reasons, `compatible con ${players}`);
-      }
-
+      const result = scoreCandidate(candidate, favorites, players);
       return {
         ...candidate,
-        recommendationScore: score,
-        recommendationReasons: reasons.slice(0, 4)
+        recommendationScore: result.score + 2,
+        recommendationReasons: result.reasons
       };
     })
-    .filter((game) => game.recommendationScore > 0)
-    .sort((a, b) => b.recommendationScore - a.recommendationScore || a.name.localeCompare(b.name))
+    .filter((game) => game.recommendationScore > 2);
+
+  const rankedLibrary = libraryCandidates
+    .map((candidate) => {
+      const result = scoreCandidate(candidate, favorites, players);
+      return {
+        ...candidate,
+        recommendationScore: result.score,
+        recommendationReasons: result.reasons
+      };
+    })
+    .filter((game) => game.recommendationScore > 0);
+
+  return [...rankedCatalog, ...rankedLibrary]
+    .sort((a, b) => {
+      if (a.recommendationSource !== b.recommendationSource) {
+        return a.recommendationSource === "catalog" ? -1 : 1;
+      }
+      return b.recommendationScore - a.recommendationScore || a.name.localeCompare(b.name);
+    })
     .slice(0, limit);
 }
