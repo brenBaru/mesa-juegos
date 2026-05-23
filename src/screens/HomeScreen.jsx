@@ -52,6 +52,7 @@ export function HomeScreen({
   setModeFilter,
   resetFilters,
   visibleGames,
+  recommendedGames = [],
   deleteNotice,
   setDeleteNotice,
   screen,
@@ -308,6 +309,62 @@ return (
           );
           })}
         </div>
+        {screen === "favorites" && recommendedGames.length > 0 && (
+          <section className="mt-5 rounded-[1.7rem] border border-emerald-400/20 bg-slate-950/55 p-4 shadow-xl shadow-emerald-950/10 sm:rounded-[2rem] sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-300">Sugerencias</p>
+                <h2 className="mt-1 text-xl font-black text-white">También podrían gustarte</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-400">
+                  Recomendaciones calculadas según tus favoritos actuales.
+                </p>
+              </div>
+              <span className="w-fit rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-black text-cyan-200">
+                {recommendedGames.length} sugerencias
+              </span>
+            </div>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {recommendedGames.map((game) => {
+                const canPlay = playable(game);
+                return (
+                  <button
+                    key={`recommended-${game.id}`}
+                    onClick={() => { setSelected(game); setScreen("detail"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    className="group w-full rounded-[1.5rem] border border-emerald-400/20 bg-slate-900/80 p-4 text-left shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:border-emerald-300/40 hover:shadow-emerald-950/20 active:scale-[0.99]"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 translate="no" className="notranslate text-base font-black leading-6 text-white transition group-hover:text-emerald-100">{game.name}</h3>
+                        <p className="mt-2 line-clamp-2 text-sm leading-5 text-slate-400">{game.vibe}</p>
+                      </div>
+                      <span
+                        onClick={(e) => { e.stopPropagation(); toggleFav(game.id); }}
+                        className="rounded-2xl bg-slate-800/90 p-2 transition group-hover:bg-slate-700"
+                        title="Agregar a favoritos"
+                      >
+                        <StarOff className="h-5 w-5 text-slate-400" />
+                      </span>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      <Chip variant={canPlay ? "ok" : "danger"}>{canPlay ? "Se puede" : `No entra con ${players}`}</Chip>
+                      <Chip><Users size={13} />{game.min}–{game.max}</Chip>
+                      <Chip><Clock size={13} />{timeText(game)}</Chip>
+                      <Chip variant="purple">{timeLabel(game)}</Chip>
+                    </div>
+
+                    {Array.isArray(game.recommendationReasons) && game.recommendationReasons.length > 0 && (
+                      <p className="mt-3 rounded-2xl border border-slate-700/70 bg-slate-950/55 px-3 py-2 text-xs leading-5 text-slate-300">
+                        Similar por: <span className="font-bold text-emerald-200">{game.recommendationReasons.join(", ")}</span>.
+                      </p>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </main>
 
       <nav className="fixed bottom-0 left-1/2 z-30 grid w-full max-w-6xl -translate-x-1/2 grid-cols-3 gap-1 border-t border-cyan-400/20 bg-slate-950/95 p-2 backdrop-blur-xl">

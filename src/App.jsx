@@ -17,6 +17,7 @@ import { AddGameScreen } from "./screens/AddGameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { timeLabel } from "./utils/gameUtils";
 import { normalizeCatalogGame } from "./utils/catalogUtils";
+import { getRecommendedGames } from "./utils/recommendationUtils";
 
 export default function App() {
   const [screen, setScreen] = useState("home");
@@ -203,6 +204,14 @@ export default function App() {
       .filter((game) => `${game.name} ${game.type} ${game.mode}`.toLowerCase().includes(query.toLowerCase()))
       .sort((a, b) => Number(playable(b)) - Number(playable(a)) || a.name.localeCompare(b.name));
   }, [games, players, onlyPlayable, typeFilter, modeFilter, timeFilter, query, effectiveFavs, screen]);
+
+  const recommendedGames = useMemo(() => {
+    return getRecommendedGames({
+      games,
+      favoriteIds: effectiveFavs,
+      players
+    });
+  }, [games, effectiveFavs, players]);
 
   const setupPlaceholder = [
     "Un paso por línea.",
@@ -554,6 +563,7 @@ export default function App() {
       setModeFilter={setModeFilter}
       resetFilters={resetFilters}
       visibleGames={visibleGames}
+      recommendedGames={recommendedGames}
       deleteNotice={deleteNotice}
       setDeleteNotice={setDeleteNotice}
       screen={screen}
